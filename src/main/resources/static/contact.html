@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - HealthInsure</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+    <style>
+        :root {
+            --bg-gradient-1: #020617;
+            --bg-gradient-2: #0f172a;
+            --accent-cyan: #22d3ee;
+            --accent-violet: #a855f7;
+            --accent-pink: #ec4899;
+            --card-bg: rgba(15, 23, 42, 0.85);
+            --border-subtle: rgba(148, 163, 184, 0.35);
+            --text-main: #e5e7eb;
+            --text-muted: #9ca3af;
+            --danger: #f97373;
+            --success: #22c55e;
+            --warning: #f59e0b;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: radial-gradient(circle at top, #0f172a 0, #020617 55%, #000 100%);
+            min-height: 100vh;
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, -system-ui, sans-serif;
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        .bg-orbit {
+            position: fixed;
+            inset: 0;
+            overflow: hidden;
+            z-index: -2;
+        }
+
+        .bg-orbit::before, .bg-orbit::after {
+            content: "";
+            position: absolute;
+            width: 480px;
+            height: 480px;
+            border-radius: 999px;
+            background: radial-gradient(circle at 30% 30%, rgba(56, 189, 248, 0.75), transparent 60%);
+            filter: blur(4px);
+            opacity: 0.55;
+            animation: floatOrb 18s ease-in-out infinite;
+        }
+
+        .bg-orbit::after {
+            top: auto; left: auto; right: -120px; bottom: -160px;
+            background: radial-gradient(circle at 70% 70%, rgba(168, 85, 247, 0.85), transparent 60%);
+            animation-delay: -9s;
+        }
+
+        .bg-grid {
+            position: fixed;
+            inset: 0;
+            background-image:
+                    linear-gradient(to right, rgba(148, 163, 184, 0.08) 1px, transparent 1px),
+                    linear-gradient(to bottom, rgba(148, 163, 184, 0.08) 1px, transparent 1px);
+            background-size: 40px 40px;
+            opacity: 0.7;
+            mask-image: radial-gradient(circle at center, black 0, black 45%, transparent 80%);
+            z-index: -1;
+            animation: gridDrift 36s linear infinite;
+        }
+
+        @keyframes floatOrb {
+            0%, 100% { transform: translate3d(-160px, -120px, 0) scale(1); }
+            25% { transform: translate3d(40px, -200px, 0) scale(1.05); }
+            50% { transform: translate3d(220px, 40px, 0) scale(1.08); }
+            75% { transform: translate3d(-40px, 140px, 0) scale(1.03); }
+        }
+
+        @keyframes gridDrift {
+            0% { transform: translate3d(0, 0, 0) scale(1); }
+            50% { transform: translate3d(-40px, -20px, 0) scale(1.02); }
+            100% { transform: translate3d(0, 0, 0) scale(1); }
+        }
+
+        /* Header */
+        header {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+            padding: 1.5rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .brand-lockup {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .brand-mark {
+            width: 80px;
+            height: 80px;
+            border-radius: 16px;
+            background: radial-gradient(circle at 30% 20%, #e5faff 0, #22d3ee 40%, #0ea5e9 75%, #0f172a 100%);
+            box-shadow:
+                    0 0 0 1px rgba(148, 163, 184, 0.3),
+                    0 18px 40px rgba(15, 23, 42, 0.9),
+                    0 0 30px rgba(34, 211, 238, 0.4);
+            position: relative;
+            overflow: hidden;
+            display: grid;
+            place-items: center;
+            animation: logoFloat 3s ease-in-out infinite, logoGlow 2s ease-in-out infinite;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .brand-mark:hover {
+            transform: scale(1.05) rotate(5deg);
+            box-shadow:
+                    0 0 0 1px rgba(148, 163, 184, 0.5),
+                    0 25px 50px rgba(15, 23, 42, 1),
+                    0 0 50px rgba(34, 211, 238, 0.6);
+        }
+
+        .brand-mark::before {
+            content: "";
+            position: absolute;
+            inset: -2px;
+            border-radius: 18px;
+            background: linear-gradient(45deg, rgba(34, 211, 238, 0.8), rgba(168, 85, 247, 0.8), rgba(34, 211, 238, 0.8));
+            background-size: 200% 200%;
+            opacity: 0;
+            z-index: -1;
+            animation: logoShimmer 3s ease-in-out infinite;
+        }
+
+        .brand-mark img {
+            width: 72px;
+            height: 72px;
+            object-fit: contain;
+            border-radius: 12px;
+            background: #0f172a;
+            box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.35);
+            animation: logoImagePulse 2.5s ease-in-out infinite;
+            transition: transform 0.3s ease;
+        }
+
+        .brand-mark:hover img {
+            transform: scale(1.08);
+        }
+
+        @keyframes logoFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+        }
+
+        @keyframes logoGlow {
+            0%, 100% {
+                box-shadow:
+                        0 0 0 1px rgba(148, 163, 184, 0.3),
+                        0 18px 40px rgba(15, 23, 42, 0.9),
+                        0 0 30px rgba(34, 211, 238, 0.4);
+            }
+            50% {
+                box-shadow:
+                        0 0 0 1px rgba(148, 163, 184, 0.4),
+                        0 20px 45px rgba(15, 23, 42, 1),
+                        0 0 40px rgba(34, 211, 238, 0.6);
+            }
+        }
+
+        @keyframes logoShimmer {
+            0% { background-position: 0% 50%; opacity: 0; }
+            50% { opacity: 0.3; }
+            100% { background-position: 200% 50%; opacity: 0; }
+        }
+
+        @keyframes logoImagePulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.02); opacity: 0.95; }
+        }
+
+        .brand-text-main {
+            font-size: 1.8rem;
+            font-weight: 600;
+            letter-spacing: 0.09em;
+            text-transform: uppercase;
+            color: #e5e7eb;
+        }
+
+        .brand-text-sub {
+            margin-top: 3px;
+            font-size: 0.78rem;
+            letter-spacing: 0.24em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        /* Main Container */
+        .main-glass {
+            background:
+                    radial-gradient(circle at 0 0, rgba(148, 163, 184, 0.18), transparent 55%),
+                    linear-gradient(135deg, rgba(15, 23, 42, 0.92), rgba(15, 23, 42, 0.86));
+            box-shadow:
+                    0 25px 60px rgba(15, 23, 42, 0.95),
+                    0 0 0 1px rgba(148, 163, 184, 0.4);
+            border: 1px solid rgba(148, 163, 184, 0.35);
+            border-radius: 22px;
+            max-width: 1280px;
+            margin: 32px auto;
+            padding: 2.5rem 2.1rem 2rem;
+            position: relative;
+            z-index: 2;
+            animation: cardEnter 1.2s cubic-bezier(.68,-0.55,.27,1.55) both;
+        }
+
+        @keyframes cardEnter {
+            0% { opacity: 0; transform: translateY(60px) scale(0.97); }
+            60% { opacity: 1; transform: translateY(-8px) scale(1.015); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* Contact Cards */
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .contact-card {
+            background:
+                    radial-gradient(circle at 0 0, rgba(148, 163, 184, 0.18), transparent 55%),
+                    linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.85));
+            border: 1px solid rgba(148, 163, 184, 0.35);
+            padding: 2rem;
+            border-radius: 18px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .contact-card:hover {
+            transform: translateY(-4px) scale(1.02);
+            border-color: var(--accent-cyan);
+            box-shadow: 0 12px 40px rgba(34, 211, 238, 0.3);
+        }
+
+        .contact-card i {
+            font-size: 3rem;
+            color: var(--accent-cyan);
+            margin-bottom: 1rem;
+            animation: iconPulse 2s ease-in-out infinite;
+        }
+
+        .contact-card h3 {
+            margin: 0 0 1rem 0;
+            color: var(--text-main);
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .contact-card p {
+            margin: 0.5rem 0;
+            color: var(--text-muted);
+        }
+
+        .contact-card a {
+            color: var(--accent-cyan);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .contact-card a:hover {
+            color: var(--accent-violet);
+            text-decoration: underline;
+        }
+
+        @keyframes iconPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        /* Contact Form */
+        .contact-form-container {
+            background:
+                    radial-gradient(circle at 0 0, rgba(148, 163, 184, 0.18), transparent 55%),
+                    linear-gradient(135deg, rgba(15, 23, 42, 0.92), rgba(15, 23, 42, 0.86));
+            border: 1px solid rgba(148, 163, 184, 0.35);
+            border-radius: 18px;
+            padding: 2.5rem 2.1rem 2rem;
+            box-shadow: 0 25px 60px rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        .form-group {
+            margin-bottom: 17px;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: var(--text-main);
+            display: block;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            background: radial-gradient(circle at 0 0, rgba(148, 163, 184, 0.18), transparent 60%);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 0.875rem 1rem;
+            font-size: 0.875rem;
+            color: var(--text-main);
+            font-family: inherit;
+            transition: all 0.2s ease;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 0 1px rgba(34, 211, 238, 0.3), 0 0 0 12px rgba(15, 23, 42, 0.8);
+            background-color: rgba(15, 23, 42, 0.9);
+            transform: translateY(-1px);
+        }
+
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2364748b' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.7rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+            padding-right: 2.8rem;
+            cursor: pointer;
+        }
+
+        select:focus {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2322d3ee' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+        }
+
+        select option {
+            background: #0f172a;
+            color: var(--text-main);
+        }
+
+        /* Buttons */
+        .btn, .btn-info, .btn-danger, .btn-success {
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            padding: 0.82rem 2rem;
+            font-size: 1rem;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.2s ease;
+            margin: 3px 8px 3px 0;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45em;
+            font-family: inherit;
+            text-decoration: none;
+        }
+
+        .btn, .btn-info {
+            background: linear-gradient(135deg, #22d3ee, #a855f7);
+            color: #0b1120;
+            box-shadow: 0 8px 20px rgba(8, 47, 73, 0.7);
+        }
+
+        .btn:hover, .btn-info:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.05);
+            box-shadow: 0 12px 30px rgba(8, 47, 73, 0.9);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #f97373, #ef4444);
+            color: #fff;
+            box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
+        }
+
+        .btn-danger:hover {
+            box-shadow: 0 12px 30px rgba(239, 68, 68, 0.6);
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: #fff;
+            box-shadow: 0 8px 20px rgba(34, 197, 94, 0.4);
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(34, 197, 94, 0.6);
+        }
+
+        /* Messages */
+        .message {
+            padding: 12px 21px 13px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 500;
+            margin-top: 9px;
+            margin-bottom: 4px;
+            box-shadow: 0 1px 6px rgba(0,0,0,0.05);
+            border: 1px solid var(--border-subtle);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .success {
+            background: rgba(22, 163, 74, 0.2);
+            border-color: rgba(22, 163, 74, 0.4);
+            color: #bbf7d0;
+        }
+
+        .error {
+            background: rgba(127, 29, 29, 0.7);
+            border-color: rgba(248, 113, 113, 0.8);
+            color: #fecaca;
+        }
+
+        /* Footer */
+        footer {
+            padding: 10px 18px 16px;
+            font-size: 0.8rem;
+            color: #6b7280;
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(148, 163, 184, 0.1);
+        }
+
+        footer a {
+            color: #9ca3af;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        footer a:hover {
+            color: var(--accent-cyan);
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-glass {
+                margin: 16px;
+                padding: 1.5rem 1rem;
+            }
+
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
+
+            header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .brand-lockup {
+                justify-content: center;
+            }
+
+            .brand-mark {
+                width: 60px;
+                height: 60px;
+            }
+
+            .brand-mark img {
+                width: 54px;
+                height: 54px;
+            }
+
+            .brand-text-main {
+                font-size: 1.4rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="bg-orbit"></div>
+<div class="bg-grid"></div>
+
+<header>
+    <div class="container mx-auto flex items-center justify-between px-4" style="max-width: 1400px; margin: 0 auto;">
+        <div class="brand-lockup">
+            <div class="brand-mark">
+                <img src="Lanka.jpeg" alt="HealthInsure Logo">
+            </div>
+            <div>
+                <div class="brand-text-main">Contact Us</div>
+                <div class="brand-text-sub">We're Here to Help</div>
+            </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 1rem;">
+            <a href="/login.html" style="color: var(--accent-cyan); text-decoration: none; font-weight: 600;">
+                <i class="fas fa-sign-in-alt"></i> Login
+            </a>
+            <a href="/customer-portal.html" class="btn">
+                <i class="fas fa-user"></i> Customer Portal
+            </a>
+        </div>
+    </div>
+</header>
+
+<div class="main-glass">
+    <div style="text-align: center; margin-bottom: 3rem;">
+        <h1 style="font-size: 2.5rem; font-weight: 700; margin-bottom: 1rem; background: linear-gradient(120deg, #e5e7eb, #e0f2fe, #c4b5fd); -webkit-background-clip: text; background-clip: text; color: transparent;">Get in Touch</h1>
+        <p style="font-size: 1.1rem; color: var(--text-muted); max-width: 600px; margin: 0 auto;">Have questions about your insurance? Need help with a claim? Our support team is here to assist you 24/7.</p>
+    </div>
+
+    <!-- Contact Methods -->
+    <div class="contact-grid">
+        <div class="contact-card">
+            <i class="fas fa-phone"></i>
+            <h3>Phone Support</h3>
+            <p>24/7 Customer Service</p>
+            <p><a href="tel:+94112345678">+94 11 234 5678</a></p>
+            <p><a href="tel:+94771234567">+94 77 123 4567</a></p>
+            <p style="font-size: 0.9rem; margin-top: 1rem;">Toll-free from any network</p>
+        </div>
+
+        <div class="contact-card">
+            <i class="fas fa-envelope"></i>
+            <h3>Email Support</h3>
+            <p>General Inquiries</p>
+            <p><a href="mailto:support@healthinsure.lk">support@healthinsure.lk</a></p>
+            <p>Claims Support</p>
+            <p><a href="mailto:claims@healthinsure.lk">claims@healthinsure.lk</a></p>
+        </div>
+
+        <div class="contact-card">
+            <i class="fas fa-comments"></i>
+            <h3>Live Chat</h3>
+            <p>Instant Support</p>
+            <p>Available 24/7</p>
+            <button onclick="startLiveChat()" class="btn" style="margin-top: 1rem;">
+                <i class="fas fa-comment"></i> Start Chat
+            </button>
+        </div>
+
+        <div class="contact-card">
+            <i class="fas fa-map-marker-alt"></i>
+            <h3>Visit Us</h3>
+            <p>Head Office</p>
+            <p>123 Insurance Tower,<br>Colombo 01,<br>Sri Lanka</p>
+            <p style="font-size: 0.9rem; margin-top: 1rem;">Mon-Fri: 9AM-5PM</p>
+        </div>
+    </div>
+
+    <!-- Contact Form -->
+    <div class="contact-form-container">
+        <h2 style="text-align: center; margin-bottom: 2rem; font-size: 2rem; font-weight: 600;">Send us a Message</h2>
+
+        <form id="contactForm">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="form-group">
+                    <label for="firstName">First Name *</label>
+                    <input type="text" id="firstName" required>
+                </div>
+                <div class="form-group">
+                    <label for="lastName">Last Name *</label>
+                    <input type="text" id="lastName" required>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="form-group">
+                    <label for="email">Email Address *</label>
+                    <input type="email" id="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="inquiryType">Inquiry Type *</label>
+                <select id="inquiryType" required>
+                    <option value="">Select inquiry type</option>
+                    <option value="GENERAL">General Information</option>
+                    <option value="CLAIMS">Claims Support</option>
+                    <option value="POLICY">Policy Questions</option>
+                    <option value="BILLING">Billing & Payments</option>
+                    <option value="TECHNICAL">Technical Support</option>
+                    <option value="COMPLAINT">Complaint</option>
+                    <option value="OTHER">Other</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="policyNumber">Policy Number (if applicable)</label>
+                <input type="text" id="policyNumber" placeholder="e.g., POL-0001">
+            </div>
+
+            <div class="form-group">
+                <label for="subject">Subject *</label>
+                <input type="text" id="subject" placeholder="Brief description of your inquiry" required>
+            </div>
+
+            <div class="form-group">
+                <label for="message">Message *</label>
+                <textarea id="message" rows="6" placeholder="Please provide details about your inquiry..." required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="privacyConsent" required style="width: auto; margin-right: 8px;">
+                    I agree to the <a href="/privacy-policy.html" style="color: var(--accent-cyan);">Privacy Policy</a> and consent to being contacted regarding this inquiry. *
+                </label>
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button type="button" onclick="submitContactForm()" class="btn-success">
+                    <i class="fas fa-paper-plane"></i>
+                    Send Message
+                </button>
+                <button type="reset" class="btn-danger">
+                    <i class="fas fa-eraser"></i>
+                    Clear Form
+                </button>
+            </div>
+        </form>
+
+        <p class="message" id="contactMessage"></p>
+    </div>
+
+    <!-- Emergency Contact -->
+    <div style="background: linear-gradient(135deg, rgba(248, 113, 113, 0.2), rgba(239, 68, 68, 0.1)); border: 1px solid rgba(248, 113, 113, 0.4); border-radius: 18px; padding: 2rem; margin-top: 3rem; text-align: center;">
+        <h3 style="color: #f97373; margin-bottom: 1rem;">
+            <i class="fas fa-exclamation-triangle"></i> Emergency Contact
+        </h3>
+        <p style="font-size: 1.1rem; margin-bottom: 1rem;">For medical emergencies, please contact:</p>
+        <p style="font-size: 1.5rem; font-weight: 600; color: #f97373;">
+            <i class="fas fa-phone"></i> 1990
+        </p>
+        <p style="color: var(--text-muted);">National Emergency Hotline (Available 24/7)</p>
+    </div>
+</div>
+
+<footer>
+    <span>&copy; 2025 HealthInsure</span>
+    <a href="/privacy-policy.html">Privacy Policy</a>
+    <a href="/contact.html">Contact Support</a>
+</footer>
+
+<script>
+    function submitContactForm() {
+        const form = document.getElementById('contactForm');
+        const formData = new FormData(form);
+
+        // Validate required fields
+        const requiredFields = ['firstName', 'lastName', 'email', 'inquiryType', 'subject', 'message', 'privacyConsent'];
+        let isValid = true;
+
+        requiredFields.forEach(field => {
+            const element = document.getElementById(field);
+            if (!element.value.trim() || (field === 'privacyConsent' && !element.checked)) {
+                element.style.borderColor = '#f97373';
+                isValid = false;
+            } else {
+                element.style.borderColor = 'var(--border-subtle)';
+            }
+        });
+
+        if (!isValid) {
+            showMessage('contactMessage', 'Please fill in all required fields', 'error');
+            return;
+        }
+
+        // Mock form submission - replace with actual API call
+        const submitBtn = document.querySelector('.btn-success');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+        submitBtn.disabled = true;
+
+        setTimeout(() => {
+            showMessage('contactMessage', 'Thank you for your message! We will get back to you within 24 hours.', 'success');
+            form.reset();
+
+            // Reset button
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+
+            // Reset border colors
+            requiredFields.forEach(field => {
+                const element = document.getElementById(field);
+                element.style.borderColor = 'var(--border-subtle)';
+            });
+        }, 2000);
+    }
+
+    function startLiveChat() {
+        // Redirect to customer support page or open chat widget
+        window.location.href = '/customer_support.html';
+    }
+
+    function showMessage(elementId, message, type) {
+        const element = document.getElementById(elementId);
+        element.textContent = message;
+        element.className = `message ${type}`;
+
+        // Auto-hide after 5 seconds
+        setTimeout(() => {
+            element.textContent = '';
+            element.className = 'message';
+        }, 5000);
+    }
+
+    // Add input focus effects
+    document.addEventListener('DOMContentLoaded', function() {
+        const inputs = document.querySelectorAll('input, select, textarea');
+        inputs.forEach(input => {
+            input.addEventListener('focus', function() {
+                this.style.borderColor = 'var(--accent-cyan)';
+                this.style.boxShadow = '0 0 0 1px rgba(34, 211, 238, 0.3), 0 0 0 12px rgba(15, 23, 42, 0.8)';
+            });
+
+            input.addEventListener('blur', function() {
+                this.style.borderColor = 'var(--border-subtle)';
+                this.style.boxShadow = 'none';
+            });
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,2174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HealthInsure - Customer Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;500;600;700;800&display=swap');
+
+        :root {
+            --bg-gradient-1: #020617;
+            --bg-gradient-2: #0f172a;
+            --accent-cyan: #22d3ee;
+            --accent-violet: #a855f7;
+            --card-bg: rgba(15, 23, 42, 0.85);
+            --border-subtle: rgba(148, 163, 184, 0.35);
+            --text-main: #e5e7eb;
+            --text-muted: #9ca3af;
+            --danger: #f97373;
+            --primary-black: #000000;
+            --primary-white: #ffffff;
+            --light-gray: #f5f5f7;
+            --border-gray: #d2d2d7;
+            --text-gray: #888;
+            --text-dark: #ffffff;
+            --accent-blue: #000000;
+            --danger-red: #000000;
+            --success-green: #30d158;
+        }
+
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, -system-ui, sans-serif;
+            background: radial-gradient(circle at top, #0f172a 0, #020617 55%, #000 100%);
+            color: var(--text-main);
+            line-height: 1.6;
+            font-weight: 400;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* Full-page animated background */
+        .bg-orbit {
+            position: fixed;
+            inset: 0;
+            overflow: hidden;
+            z-index: -2;
+        }
+
+        .bg-orbit::before, .bg-orbit::after {
+            content: "";
+            position: absolute;
+            width: 480px;
+            height: 480px;
+            border-radius: 999px;
+            background: radial-gradient(circle at 30% 30%, rgba(56, 189, 248, 0.75), transparent 60%);
+            filter: blur(4px);
+            opacity: 0.55;
+            animation: floatOrb 18s ease-in-out infinite;
+        }
+
+        .bg-orbit::after {
+            top: auto;
+            left: auto;
+            right: -120px;
+            bottom: -160px;
+            background: radial-gradient(circle at 70% 70%, rgba(168, 85, 247, 0.85), transparent 60%);
+            animation-delay: -9s;
+        }
+
+        .bg-grid {
+            position: fixed;
+            inset: 0;
+            background-image: linear-gradient(to right, rgba(148, 163, 184, 0.08) 1px, transparent 1px), linear-gradient(to bottom, rgba(148, 163, 184, 0.08) 1px, transparent 1px);
+            background-size: 40px 40px;
+            opacity: 0.7;
+            mask-image: radial-gradient(circle at center, black 0, black 45%, transparent 80%);
+            z-index: -1;
+            animation: gridDrift 36s linear infinite;
+        }
+
+        @keyframes floatOrb {
+            0%, 100% { transform: translate3d(-160px, -120px, 0) scale(1); }
+            25% { transform: translate3d(40px, -200px, 0) scale(1.05); }
+            50% { transform: translate3d(220px, 40px, 0) scale(1.08); }
+            75% { transform: translate3d(-40px, 140px, 0) scale(1.03); }
+        }
+
+        @keyframes gridDrift {
+            0% { transform: translate3d(0, 0, 0) scale(1); }
+            50% { transform: translate3d(-40px, -20px, 0) scale(1.02); }
+            100% { transform: translate3d(0, 0, 0) scale(1); }
+        }
+
+        /* Container for centering content */
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+
+        .text-center { text-align: center; }
+        .mx-auto { margin-left: auto; margin-right: auto; }
+
+        /* Apple Style - Clean Minimalist Components */
+        .profile-section, .summary-item, .content, .card-details, .table-responsive, .glass-card, .modal-glass, .tabs, form, .tab, .summary-grid > div {
+            background: var(--primary-white);
+            border: 1px solid var(--border-gray);
+            border-radius: 18px;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+        }
+
+        /* Modern Header */
+        header {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+            padding: 1.5rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            color: var(--text-main);
+        }
+
+        .brand-lockup {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .brand-mark {
+            width: 80px;
+            height: 80px;
+            border-radius: 16px;
+            background: radial-gradient(circle at 30% 20%, #e5faff 0, #22d3ee 40%, #0ea5e9 75%, #0f172a 100%);
+            box-shadow: 0 0 0 1px rgba(148, 163, 184, 0.3), 0 18px 40px rgba(15, 23, 42, 0.9), 0 0 30px rgba(34, 211, 238, 0.4);
+            position: relative;
+            overflow: hidden;
+            display: grid;
+            place-items: center;
+            animation: logoFloat 3s ease-in-out infinite, logoGlow 2s ease-in-out infinite;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .brand-mark:hover {
+            transform: scale(1.05) rotate(5deg);
+            box-shadow: 0 0 0 1px rgba(148, 163, 184, 0.5), 0 25px 50px rgba(15, 23, 42, 1), 0 0 50px rgba(34, 211, 238, 0.6);
+        }
+
+        .brand-mark::before {
+            content: "";
+            position: absolute;
+            inset: -2px;
+            border-radius: 18px;
+            background: linear-gradient(45deg, rgba(34, 211, 238, 0.8), rgba(168, 85, 247, 0.8), rgba(34, 211, 238, 0.8));
+            background-size: 200% 200%;
+            opacity: 0;
+            z-index: -1;
+            animation: logoShimmer 3s ease-in-out infinite;
+        }
+
+        .brand-mark img {
+            width: 72px;
+            height: 72px;
+            object-fit: contain;
+            border-radius: 12px;
+            background: #0f172a;
+            box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.35);
+            animation: logoImagePulse 2.5s ease-in-out infinite;
+            transition: transform 0.3s ease;
+        }
+
+        .brand-mark:hover img { transform: scale(1.08); }
+
+        @keyframes logoFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+        }
+
+        @keyframes logoGlow {
+            0%, 100% {
+                box-shadow: 0 0 0 1px rgba(148, 163, 184, 0.3), 0 18px 40px rgba(15, 23, 42, 0.9), 0 0 30px rgba(34, 211, 238, 0.4);
+            }
+            50% {
+                box-shadow: 0 0 0 1px rgba(148, 163, 184, 0.4), 0 20px 45px rgba(15, 23, 42, 1), 0 0 40px rgba(34, 211, 238, 0.6);
+            }
+        }
+
+        @keyframes logoShimmer {
+            0% { background-position: 0% 50%; opacity: 0; }
+            50% { opacity: 0.3; }
+            100% { background-position: 200% 50%; opacity: 0; }
+        }
+
+        @keyframes logoImagePulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.02); opacity: 0.95; }
+        }
+
+        .brand-text-main {
+            font-size: 1.8rem;
+            font-weight: 600;
+            letter-spacing: 0.09em;
+            text-transform: uppercase;
+            color: #e5e7eb;
+        }
+
+        .brand-text-sub {
+            margin-top: 3px;
+            font-size: 0.78rem;
+            letter-spacing: 0.24em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        header h1, .logo-main {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 600;
+            letter-spacing: 0.09em;
+            text-transform: uppercase;
+            color: #e5e7eb;
+        }
+
+        /* Modern Navigation Buttons */
+        .nav-container {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 2rem auto;
+            padding: 1rem;
+            max-width: 1000px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .nav-button {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            border-radius: 16px;
+            padding: 1rem 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            min-width: 140px;
+            animation: cardEnter 0.7s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+        }
+
+        .nav-button:nth-child(1) { animation-delay: 0.1s; }
+        .nav-button:nth-child(2) { animation-delay: 0.2s; }
+        .nav-button:nth-child(3) { animation-delay: 0.3s; }
+        .nav-button:nth-child(4) { animation-delay: 0.4s; }
+
+        .nav-button:hover {
+            background: rgba(15, 23, 42, 0.8);
+            border-color: var(--accent-cyan);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(34, 211, 238, 0.3);
+        }
+
+        .nav-button.active {
+            background: linear-gradient(135deg, #22d3ee, #a855f7);
+            border-color: transparent;
+            color: #0b1120;
+            box-shadow: 0 8px 20px rgba(34, 211, 238, 0.4);
+        }
+
+        .nav-icon {
+            font-size: 1.5rem;
+            color: var(--accent-cyan);
+            margin-bottom: 0.5rem;
+            display: block;
+            transition: all 0.2s ease;
+        }
+
+        .nav-button.active .nav-icon { color: #0b1120; }
+        .nav-button:hover .nav-icon { transform: scale(1.1); color: var(--accent-cyan); }
+
+        .nav-title {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-main);
+            text-transform: none;
+            letter-spacing: 0;
+            margin-bottom: 0.3rem;
+        }
+
+        .nav-button.active .nav-title { color: #0b1120; }
+
+        .nav-subtitle {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        .nav-button.active .nav-subtitle { color: rgba(11, 17, 32, 0.7); }
+
+        /* Modern Content Containers */
+        .content {
+            margin: 3rem auto;
+            padding: 3rem 2rem;
+            max-width: 1200px;
+            background: radial-gradient(circle at 0 0, rgba(148, 163, 184, 0.18), transparent 55%), radial-gradient(circle at 100% 100%, rgba(236, 72, 153, 0.2), transparent 55%), linear-gradient(135deg, rgba(15, 23, 42, 0.92), rgba(15, 23, 42, 0.86));
+            border: 1px solid rgba(148, 163, 184, 0.35);
+            border-radius: 22px;
+            box-shadow: 0 25px 60px rgba(15, 23, 42, 0.95), 0 0 0 1px rgba(148, 163, 184, 0.4);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            animation: cardEnter 0.7s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+        }
+
+        @keyframes cardEnter {
+            0% {
+                opacity: 0;
+                transform: translate3d(0, 26px, 0) scale(0.97);
+            }
+            60% {
+                opacity: 1;
+                transform: translate3d(0, -6px, 0) scale(1.01);
+            }
+            100% {
+                opacity: 1;
+                transform: translate3d(0, 0, 0) scale(1);
+            }
+        }
+
+        .content h3 {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            letter-spacing: 0;
+            text-transform: none;
+            color: var(--text-main);
+        }
+
+        .content h4 {
+            font-size: 1.125rem;
+            font-weight: 500;
+            margin: 2rem 0 1rem 0;
+            text-transform: none;
+            letter-spacing: 0;
+            color: var(--text-main);
+        }
+
+        .content p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Modern Card Style */
+        .profile-section {
+            background: radial-gradient(circle at 0 0, rgba(148, 163, 184, 0.18), transparent 55%), linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.85));
+            border: 1px solid rgba(148, 163, 184, 0.35);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+            border-radius: 18px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(15, 23, 42, 0.8);
+        }
+
+        .profile-section:hover {
+            border-color: var(--accent-cyan);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(34, 211, 238, 0.3);
+        }
+
+        .summary-info {
+            background: var(--primary-white);
+            border: 1px solid var(--border-gray);
+            padding: 2rem;
+            border-radius: 18px;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .summary-item {
+            background: radial-gradient(circle at 0 0, rgba(148, 163, 184, 0.18), transparent 55%), linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.85));
+            border: 1px solid rgba(148, 163, 184, 0.35);
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(15, 23, 42, 0.8);
+        }
+
+        .summary-item:hover {
+            border-color: var(--accent-cyan);
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 12px 40px rgba(34, 211, 238, 0.3);
+        }
+
+        .summary-item label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+            text-transform: none;
+            letter-spacing: 0;
+        }
+
+        .summary-item span {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--accent-cyan);
+            display: block;
+        }
+
+        /* Modern Tables */
+        .table-responsive {
+            background: radial-gradient(circle at 0 0, rgba(148, 163, 184, 0.18), transparent 55%), linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 0.9));
+            border: 1px solid rgba(148, 163, 184, 0.35);
+            padding: 1.5rem;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            border-radius: 18px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 0 25px 60px rgba(15, 23, 42, 0.95);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+            font-size: 0.875rem;
+        }
+
+        th {
+            background: linear-gradient(135deg, rgba(34, 211, 238, 0.3), rgba(168, 85, 247, 0.3));
+            color: var(--text-main);
+            font-weight: 600;
+            text-transform: none;
+            letter-spacing: 0;
+            font-size: 0.85rem;
+        }
+
+        td { color: var(--text-main); }
+
+        tbody tr:hover {
+            background: rgba(34, 211, 238, 0.1);
+            transform: scale(1.01);
+        }
+
+        tbody tr:last-child td { border-bottom: none; }
+
+        /* Modern Policy Cards */
+        #availablePoliciesContainer > div, .glass-card, .policy-card {
+            background: radial-gradient(circle at 0 0, rgba(148, 163, 184, 0.18), transparent 55%), linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.85));
+            border: 1px solid rgba(148, 163, 184, 0.35);
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border-radius: 18px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(15, 23, 42, 0.8);
+            color: var(--text-main);
+        }
+
+        #availablePoliciesContainer > div:hover, .glass-card:hover, .policy-card:hover {
+            border-color: var(--accent-cyan);
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 12px 40px rgba(34, 211, 238, 0.3);
+        }
+
+        /* Modern Form Inputs */
+        .form-input, input, select, textarea {
+            width: 100%;
+            background: radial-gradient(circle at 0 0, rgba(148, 163, 184, 0.18), transparent 60%);
+            border: 1px solid var(--border-subtle);
+            border-radius: 999px;
+            padding: 0.875rem 1rem;
+            font-size: 0.875rem;
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            transition: all 0.18s ease;
+        }
+
+        textarea {
+            border-radius: 16px;
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2364748b' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.75rem center;
+            background-repeat: no-repeat;
+            background-size: 1.2em 1.2em;
+            padding-right: 2.5rem;
+            cursor: pointer;
+        }
+
+        select:focus {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2322d3ee' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+        }
+
+        .form-input::placeholder, input::placeholder, select::placeholder, textarea::placeholder {
+            color: #6b7280;
+        }
+
+        .form-input:focus, input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 0 1px rgba(34, 211, 238, 0.3), 0 0 0 12px rgba(15, 23, 42, 0.8);
+            background-color: rgba(15, 23, 42, 0.9);
+            transform: translateY(-1px);
+        }
+
+        select option {
+            background: var(--primary-white);
+            color: var(--primary-black);
+        }
+
+        /* Modern Gradient Buttons */
+        button, .submit-btn, .refresh-btn, .pay-btn, .cancel-btn, .edit-btn, .save-btn, .logout-btn, .profile-icon-btn, .back-btn, .buy-btn {
+            border: none;
+            border-radius: 999px;
+            color: #0b1120;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            font-size: 0.85rem;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.2s ease;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+            text-transform: none;
+            letter-spacing: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .submit-btn, .pay-btn, .save-btn, .refresh-btn, .edit-btn, button:not(.cancel-btn):not(.back-btn):not(.profile-icon-btn) {
+            background: linear-gradient(135deg, #22d3ee, #a855f7);
+            box-shadow: 0 8px 20px rgba(8, 47, 73, 0.7);
+        }
+
+        button:hover:not(.cancel-btn):not(.back-btn):not(.profile-icon-btn), .submit-btn:hover, .refresh-btn:hover, .pay-btn:hover, .edit-btn:hover, .save-btn:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.05);
+            box-shadow: 0 12px 30px rgba(8, 47, 73, 0.9);
+        }
+
+        .cancel-btn {
+            background: linear-gradient(135deg, #f97373, #ef4444);
+            color: #fff;
+            box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
+        }
+
+        .cancel-btn:hover {
+            box-shadow: 0 12px 30px rgba(239, 68, 68, 0.6);
+            transform: translateY(-2px);
+        }
+
+        .logout-btn {
+            background: linear-gradient(135deg, #22d3ee, #a855f7);
+            color: #0b1120;
+            margin-left: 12px;
+            padding: 10px 20px;
+            border-radius: 999px;
+            box-shadow: 0 8px 20px rgba(8, 47, 73, 0.7);
+        }
+
+        .logout-btn:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.05);
+            box-shadow: 0 12px 30px rgba(8, 47, 73, 0.9);
+        }
+
+        .back-btn {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            color: var(--text-main);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .back-btn:hover {
+            background: rgba(15, 23, 42, 0.8);
+            border-color: var(--accent-cyan);
+            transform: translateY(-2px);
+        }
+
+        .profile-icon-btn {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            border-radius: 50%;
+            width: 42px;
+            height: 42px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            color: var(--text-main);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transition: all 0.2s ease;
+        }
+
+        .profile-icon-btn:hover {
+            background: rgba(15, 23, 42, 0.8);
+            border-color: var(--accent-cyan);
+            color: var(--accent-cyan);
+            transform: scale(1.1);
+        }
+
+        /* Modern Modal & Messages */
+        .modal-glass, #purchasePolicyModal, #paymentModal {
+            background: radial-gradient(circle at 0 0, rgba(148, 163, 184, 0.18), transparent 55%), linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 0.9));
+            border: 1px solid rgba(148, 163, 184, 0.35);
+            box-shadow: 0 25px 60px rgba(15, 23, 42, 0.95), 0 0 0 1px rgba(148, 163, 184, 0.4);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            color: var(--text-main);
+        }
+
+        .message {
+            padding: 1rem 1.25rem;
+            margin: 1.25rem 0;
+            font-weight: 400;
+            font-size: 0.875rem;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .message.success {
+            background: rgba(22, 163, 74, 0.2);
+            border: 1px solid rgba(22, 163, 74, 0.4);
+            color: #bbf7d0;
+        }
+
+        .message.error {
+            background: rgba(127, 29, 29, 0.7);
+            border: 1px solid rgba(248, 113, 113, 0.8);
+            color: #fecaca;
+        }
+
+        /* Additional Styles */
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        label {
+            color: var(--primary-black);
+            font-weight: 500;
+            font-size: 0.75rem;
+            margin-bottom: 0.5rem;
+            display: block;
+            text-transform: none;
+            letter-spacing: 0;
+        }
+
+        .info-item label {
+            color: var(--text-gray);
+            font-size: 0.75rem;
+        }
+
+        .info-item span {
+            color: var(--primary-black);
+            font-size: 1rem;
+            font-weight: 400;
+        }
+
+        /* Modern Status Badges */
+        .status-badge {
+            padding: 0.4rem 0.8rem;
+            border-radius: 2rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            display: inline-block;
+            margin: 3px 0;
+            border: none;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+        .status-badge.status-active, .status-badge.active {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #fff;
+        }
+        .status-badge.status-inactive, .status-badge.inactive {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: #fff;
+        }
+        .status-badge.status-open, .status-badge.open, .status-badge.pending {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: #fff;
+        }
+        .status-badge.status-closed, .status-badge.closed, .status-badge.resolved {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #fff;
+        }
+
+        /* Design Pattern 1: Card Pattern */
+        .card {
+            background: var(--primary-white);
+            border: 1px solid var(--border-gray);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: var(--primary-black);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border-gray);
+        }
+
+        .card-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--primary-black);
+            margin: 0;
+        }
+
+        .card-body { padding: 0; }
+
+        .card-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-gray);
+        }
+
+        /* Design Pattern 2: Loading State Pattern */
+        .loading-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--border-gray);
+            border-top: 3px solid var(--accent-cyan);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .skeleton {
+            background: linear-gradient(90deg, var(--light-gray) 25%, #f0f0f0 50%, var(--light-gray) 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 4px;
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .skeleton-text { height: 1rem; margin-bottom: 0.5rem; }
+        .skeleton-text.short { width: 60%; }
+        .skeleton-text.medium { width: 80%; }
+        .skeleton-text.long { width: 100%; }
+
+        /* Clean Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: var(--light-gray); }
+        ::-webkit-scrollbar-thumb { background: var(--text-gray); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary-black); }
+
+        ::selection {
+            background: var(--primary-black);
+            color: var(--primary-white);
+        }
+
+        /* Content Visibility */
+        .content { display: none; }
+        .content.active { display: block; }
+
+        .fa, .fas, .far { margin-right: 0.5rem; }
+
+        .logo {
+            width: 80px;
+            height: auto;
+            max-height: 90px;
+            object-fit: contain;
+            margin-bottom: 0;
+            border-radius: 16px;
+        }
+
+        /* Utility Classes */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        small {
+            color: var(--text-gray);
+            font-size: 0.75rem;
+        }
+
+        #premiumHealthDetails {
+            background: var(--light-gray);
+            border: 1px solid var(--border-gray);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .card-details {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            margin: 1.5rem 0;
+        }
+
+        .payment-amount {
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin: 1.5rem 0;
+            color: var(--primary-black);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 850px) {
+            .content { padding: 2rem 1.5rem; margin: 2rem 1rem; }
+            .profile-section { padding: 1.5rem; }
+            .summary-item { padding: 1.25rem; }
+            header { padding: 1rem 1.5rem; }
+            .logo-main { font-size: 1rem; }
+        }
+
+        @media (max-width: 600px) {
+            .content { padding: 1.5rem 1rem; margin: 1rem 0.5rem; }
+            .nav-container { flex-wrap: wrap; }
+            .nav-button { padding: 0.75rem 1rem; font-size: 0.7rem; }
+            header { padding: 1rem; }
+            .logo-main { font-size: 0.875rem; }
+            .summary-grid, .info-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<div class="bg-orbit"></div>
+<div class="bg-grid"></div>
+
+<header>
+    <div style="display: flex; justify-content: space-between; align-items: center; padding: 0 20px; max-width: 1400px; margin: 0 auto;">
+        <div class="brand-lockup">
+            <div class="brand-mark">
+                <img src="Lanka.jpeg" alt="Lanka Health Insurance Logo">
+            </div>
+            <div>
+                <div class="brand-text-main">Lanka Health Insurance</div>
+                <div class="brand-text-sub">A RELATIONSHIP FOR LIFE</div>
+            </div>
+        </div>
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <button onclick="openProfilePage()" class="profile-icon-btn" title="My Profile" style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(148, 163, 184, 0.3); color: var(--text-main); backdrop-filter: blur(10px);">
+                <i class="fas fa-user"></i>
+            </button>
+            <button onclick="logout()" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </div>
+    </div>
+</header>
+
+<div class="nav-container" id="mainTabs">
+    <div class="nav-button active" onclick="openTab('manage-policies', event)">
+        <i class="fas fa-th-large nav-icon"></i>
+        <div class="nav-title">Dashboard</div>
+        <div class="nav-subtitle">View policies & overview</div>
+    </div>
+    <div class="nav-button" onclick="openTab('submit-claim', event)">
+        <i class="fas fa-file-medical nav-icon"></i>
+        <div class="nav-title">Submit Claim</div>
+        <div class="nav-subtitle">File insurance claims</div>
+    </div>
+    <div class="nav-button" onclick="openTab('payment-status', event)">
+        <i class="fas fa-credit-card nav-icon"></i>
+        <div class="nav-title">Payments</div>
+        <div class="nav-subtitle">Manage transactions</div>
+    </div>
+    <div class="nav-button" onclick="openTab('inquiry-history', event)">
+        <i class="fas fa-comments nav-icon"></i>
+        <div class="nav-title">Support</div>
+        <div class="nav-subtitle">Get help & assistance</div>
+    </div>
+</div>
+
+<div id="my-profile" class="content">
+    <div style="margin-bottom: 20px;">
+        <button onclick="backToHome()" class="back-btn">
+            ← Back to Home
+        </button>
+    </div>
+    <h3>My Profile</h3>
+    <div class="profile-info">
+        <div class="profile-section personal-info">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h4 style="margin: 0;">Personal Information</h4>
+                <button onclick="toggleEditPersonalInfo()" class="edit-btn" id="editPersonalBtn">✏️ Edit</button>
+            </div>
+
+            <!-- Display Mode -->
+            <div id="personalInfoDisplay" class="info-grid">
+                <div class="info-item">
+                    <label>Full Name:</label>
+                    <span id="name">Loading...</span>
+                </div>
+                <div class="info-item">
+                    <label>Username:</label>
+                    <span id="username">Loading...</span>
+                </div>
+                <div class="info-item">
+                    <label>Email:</label>
+                    <span id="email">Loading...</span>
+                </div>
+                <div class="info-item">
+                    <label>Phone:</label>
+                    <span id="phone">Loading...</span>
+                </div>
+                <div class="info-item">
+                    <label>Account Status:</label>
+                    <span id="accountStatus">Loading...</span>
+                </div>
+                <div class="info-item">
+                    <label>Member Since:</label>
+                    <span id="memberSince">Loading...</span>
+                </div>
+            </div>
+
+            <!-- Edit Mode -->
+            <div id="personalInfoEdit" style="display: none;">
+                <div class="info-grid">
+                    <div class="info-item">
+                        <label>Full Name:</label>
+                        <input type="text" id="editName" class="form-input" />
+                    </div>
+                    <div class="info-item">
+                        <label>Email:</label>
+                        <input type="email" id="editEmail" class="form-input" />
+                    </div>
+                    <div class="info-item">
+                        <label>Phone:</label>
+                        <input type="tel" id="editPhone" class="form-input" />
+                    </div>
+                </div>
+                <div style="margin-top: 15px; display: flex; gap: 10px;">
+                    <button onclick="savePersonalInfo()" class="save-btn">💾 Save Changes</button>
+                    <button onclick="cancelEditPersonalInfo()" class="cancel-btn">✖ Cancel</button>
+                </div>
+                <p id="personalInfoMessage" style="margin-top: 10px;"></p>
+            </div>
+        </div>
+
+        <!-- Bank Information Section -->
+        <div class="profile-section bank-info">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h4 style="margin: 0;">🏦 Bank Information</h4>
+                <button onclick="toggleEditBankInfo()" class="edit-btn" id="editBankBtn">✏️ Edit</button>
+            </div>
+
+            <!-- Display Mode -->
+            <div id="bankInfoDisplay" class="info-grid">
+                <div class="info-item">
+                    <label>Bank Name:</label>
+                    <span id="bankName">Not provided</span>
+                </div>
+                <div class="info-item">
+                    <label>Account Number:</label>
+                    <span id="accountNumber">Not provided</span>
+                </div>
+                <div class="info-item">
+                    <label>Account Holder:</label>
+                    <span id="accountHolder">Not provided</span>
+                </div>
+                <div class="info-item">
+                    <label>Branch:</label>
+                    <span id="branch">Not provided</span>
+                </div>
+            </div>
+
+            <!-- Edit Mode -->
+            <div id="bankInfoEdit" style="display: none;">
+                <div class="info-grid">
+                    <div class="info-item">
+                        <label>Bank Name:</label>
+                        <input type="text" id="editBankName" class="form-input" placeholder="Enter bank name" />
+                    </div>
+                    <div class="info-item">
+                        <label>Account Number:</label>
+                        <input type="text" id="editAccountNumber" class="form-input" placeholder="Enter account number" />
+                    </div>
+                    <div class="info-item">
+                        <label>Account Holder Name:</label>
+                        <input type="text" id="editAccountHolder" class="form-input" placeholder="Enter account holder name" />
+                    </div>
+                    <div class="info-item">
+                        <label>Branch:</label>
+                        <input type="text" id="editBranch" class="form-input" placeholder="Enter branch name" />
+                    </div>
+                </div>
+                <div style="margin-top: 15px; display: flex; gap: 10px;">
+                    <button onclick="saveBankInfo()" class="save-btn">💾 Save Bank Details</button>
+                    <button onclick="cancelEditBankInfo()" class="cancel-btn">✖ Cancel</button>
+                </div>
+                <p id="bankInfoMessage" style="margin-top: 10px;"></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="profile-section policies-info">
+        <h4>My Insurance Policies</h4>
+        <div class="table-responsive">
+            <table id="policiesTable">
+                <thead>
+                <tr>
+                    <th>Policy Number</th>
+                    <th>Type</th>
+                    <th>Premium Amount</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Status</th>
+                    <th>Coverage Details</th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="profile-section summary-info">
+        <h4>Account Summary</h4>
+        <div class="summary-grid">
+            <div class="summary-item">
+                <label>Total Active Policies:</label>
+                <span id="totalPolicies">0</span>
+            </div>
+            <div class="summary-item">
+                <label>Total Claims Filed:</label>
+                <span id="totalClaims">0</span>
+            </div>
+            <div class="summary-item">
+                <label>Pending Claims:</label>
+                <span id="pendingClaims">0</span>
+            </div>
+            <div class="summary-item">
+                <label>Next Payment Due:</label>
+                <span id="nextPaymentDue">None</span>
+            </div>
+        </div>
+    </div>
+
+    <button onclick="refreshProfile()" class="refresh-btn">Refresh Profile</button>
+</div>
+
+<div id="manage-policies" class="content active">
+    <h3>My Purchased Policies</h3>
+    <p style="color: #666; margin-bottom: 15px;">View all your active and purchased insurance policies.</p>
+
+    <div class="table-responsive" style="margin-bottom: 40px;">
+        <table id="myPurchasedPoliciesTable">
+            <thead>
+            <tr>
+                <th>Policy Number</th>
+                <th>Coverage Type</th>
+                <th>Premium Amount</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Status</th>
+                <th>Coverage Details</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr><td colspan="7">
+                <div class="loading-container">
+                    <div class="loading-spinner"></div>
+                    <div class="loading-text">Loading your policies...</div>
+                </div>
+            </td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div id="buyNewPolicySection">
+        <h3 style="margin-top: 40px;">Buy New Insurance Policy</h3>
+        <p style="color: #666; margin-bottom: 20px;">Choose the perfect health insurance plan for you and your family. All plans include comprehensive coverage and 24/7 customer support.</p>
+
+        <div id="availablePoliciesContainer" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 30px;">
+            <!-- Policy cards will be loaded here -->
+        </div>
+    </div>
+
+    <!-- Purchase Policy Modal -->
+    <div id="purchasePolicyModal" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); border-radius: 24px; z-index: 1000; max-width: 500px; width: 90%; backdrop-filter: blur(10px); border: 1px solid #e0e0e0;">
+        <h3 style="margin-top: 0;">Complete Your Purchase</h3>
+        <input type="hidden" id="selectedPolicyId">
+        <div style="background: #f5f5f7; padding: 20px; border-radius: 16px; margin-bottom: 20px; border: 1px solid #d2d2d7;">
+            <h4 style="margin: 0 0 10px 0; color: #1d1d1f; font-weight: 600;">Policy Details</h4>
+            <p><strong>Coverage Type:</strong> <span id="modalPolicyType"></span></p>
+            <p><strong>Amount to Pay:</strong> LKR <span id="modalPolicyPrice"></span></p>
+        </div>
+
+        <form id="purchasePolicyForm">
+            <div class="form-group" style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: bold;">Card Number *</label>
+                <input type="text" id="purchaseCardNumber" placeholder="1234 5678 9012 3456" required maxlength="19" oninput="formatCardNumber(this)" style="width: 100%; padding: 12px; border: 1px solid #d2d2d7; border-radius: 10px;">
+            </div>
+            <div style="display: flex; gap: 15px; margin-bottom: 15px;">
+                <div class="form-group" style="flex: 1;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">Expiry Date *</label>
+                    <input type="text" id="purchaseExpiryDate" placeholder="MM/YY" required maxlength="5" oninput="formatExpiryDate(this)" style="width: 100%; padding: 12px; border: 1px solid #d2d2d7; border-radius: 10px;">
+                </div>
+                <div class="form-group" style="width: 120px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">CVV *</label>
+                    <input type="text" id="purchaseCVV" placeholder="123" required pattern="[0-9]{3,4}" maxlength="4" oninput="this.value = this.value.replace(/[^0-9]/g, '')" style="width: 100%; padding: 12px; border: 1px solid #d2d2d7; border-radius: 10px;">
+                </div>
+            </div>
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: bold;">Cardholder Name *</label>
+                <input type="text" id="purchaseCardholderName" placeholder="JOHN DOE" required oninput="this.value = this.value.toUpperCase()" style="width: 100%; padding: 12px; border: 1px solid #d2d2d7; border-radius: 10px;">
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button type="button" onclick="confirmPolicyPurchase()" style="flex: 1; background: #000000; color: white; border: none; padding: 14px; border-radius: 20px; font-weight: 500; cursor: pointer; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);">Purchase Now</button>
+                <button type="button" onclick="closePurchaseModal()" style="flex: 1; background: #f5f5f7; color: #1d1d1f; border: 1px solid #d2d2d7; padding: 14px; border-radius: 20px; font-weight: 500; cursor: pointer;">Cancel</button>
+            </div>
+        </form>
+        <p class="message" id="purchaseMessage" style="margin-top: 15px;"></p>
+    </div>
+    <div id="purchaseModalOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999;" onclick="closePurchaseModal()"></div>
+</div>
+
+<div id="submit-claim" class="content">
+    <h3>Submit a Claim</h3>
+    <form id="claimForm">
+        <select id="policySelect" required>
+            <option value="">Select a Policy</option>
+        </select>
+
+        <input type="number" id="claimAmount" placeholder="Claim Amount" required step="0.01" min="0">
+        <textarea id="description" placeholder="Description of the claim" required></textarea>
+
+        <div id="premiumHealthDetails" style="display: none;">
+            <h4>Premium Health Coverage Details</h4>
+            <input type="text" id="hospitalName" placeholder="Hospital Name">
+            <input type="date" id="treatmentDate" placeholder="Treatment Date">
+            <input type="text" id="diagnosis" placeholder="Diagnosis">
+            <input type="text" id="treatment" placeholder="Treatment Details">
+            <input type="text" id="doctorName" placeholder="Doctor's Name">
+        </div>
+
+        <button type="button" onclick="submitClaim()" class="submit-btn" style="padding: 0.5rem 1rem; font-size: 0.75rem;">Submit Claim</button>
+        <button type="button" onclick="cancelForm()" class="cancel-btn" style="padding: 0.5rem 1rem; font-size: 0.75rem;">Cancel</button>
+    </form>
+    <p class="message" id="claimMessage"></p>
+
+    <h4 style="margin-top: 30px;">My Claim History</h4>
+    <table id="claimHistoryTable">
+        <thead>
+        <tr>
+            <th>Claim ID</th>
+            <th>Policy Number</th>
+            <th>Amount</th>
+            <th>Description</th>
+            <th>Status</th>
+            <th>Submitted Date</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr><td colspan="6">
+            <div class="loading-container">
+                <div class="loading-spinner"></div>
+                <div class="loading-text">Loading claim history...</div>
+            </div>
+        </td></tr>
+        </tbody>
+    </table>
+    <button onclick="loadClaimHistory()" class="refresh-btn" style="margin-top: 10px;">Refresh Claims</button>
+</div>
+
+<div id="payment-status" class="content">
+    <h3>Claims and Payments</h3>
+
+    <h4>Approved Claims</h4>
+    <table id="approvedClaimsTable">
+        <thead>
+        <tr>
+            <th>Claim ID</th>
+            <th>Policy</th>
+            <th>Amount</th>
+            <th>Status</th>
+            <th>Date</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <div id="paymentModal" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.5); border-radius: 5px; z-index: 1000;">
+        <h4>Payment Details</h4>
+        <form id="paymentForm">
+            <input type="hidden" id="claimIdForPayment">
+            <div class="payment-amount">
+                <p>Amount to Pay: LKR <span id="paymentAmount">0.00</span></p>
+            </div>
+            <div class="card-details">
+                <div class="form-group">
+                    <label>Card Number</label>
+                    <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" required maxlength="19" oninput="formatCardNumber(this)">
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <div class="form-group" style="flex: 1;">
+                        <label>Expiry Date</label>
+                        <input type="month" id="expiryDate" required min="">
+                    </div>
+                    <div class="form-group" style="width: 120px;">
+                        <label>CVV</label>
+                        <input type="text" id="cvv" placeholder="123" required pattern="[0-9]{3,4}" maxlength="4" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Cardholder Name</label>
+                    <input type="text" id="cardholderName" placeholder="JOHN DOE" required oninput="this.value = this.value.toUpperCase()">
+                </div>
+            </div>
+            <button type="button" onclick="processPayment()" class="pay-btn">Pay Now</button>
+            <button type="button" onclick="closePaymentModal()" class="cancel-btn">Cancel</button>
+        </form>
+    </div>
+
+    <h4>Payment History</h4>
+    <p style="color: #666; font-size: 14px; margin-bottom: 10px;">View all your payments including policy purchases and claim payments.</p>
+    <table id="paymentHistoryTable">
+        <thead>
+        <tr>
+            <th>Payment ID</th>
+            <th>Type</th>
+            <th>Amount</th>
+            <th>Status</th>
+            <th>Date</th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    <button onclick="refreshPayments()" class="refresh-btn">Refresh</button>
+</div>
+
+<div id="inquiry-history" class="content">
+    <h3>Submit Inquiry</h3>
+    <form id="inquiryForm">
+        <div class="form-group">
+            <label>Inquiry Type</label>
+            <select id="inquiryType" required>
+                <option value="">Select Type</option>
+                <option value="BILLING">Billing Issue</option>
+                <option value="CLAIM">Claim Related</option>
+                <option value="POLICY">Policy Information</option>
+                <option value="GENERAL">General Question</option>
+                <option value="COMPLAINT">Complaint</option>
+                <option value="OTHER">Other</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Subject/Title</label>
+            <input type="text" id="inquiryTitle" placeholder="Brief subject of your inquiry" required maxlength="200">
+        </div>
+
+        <div class="form-group">
+            <label>Description</label>
+            <textarea id="inquiryDescription" placeholder="Provide detailed information about your inquiry..." required rows="5"></textarea>
+        </div>
+
+        <button type="button" onclick="submitInquiry()" class="submit-btn" style="padding: 0.5rem 1rem; font-size: 0.75rem;">Submit Inquiry</button>
+        <button type="button" onclick="clearInquiryForm()" class="cancel-btn" style="padding: 0.5rem 1rem; font-size: 0.75rem;">Clear</button>
+    </form>
+    <p class="message" id="inquiryMessage"></p>
+
+    <h3 style="margin-top: 30px;">My Inquiries</h3>
+    <table id="inquiryTable">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Type</th>
+            <th>Subject</th>
+            <th>Status</th>
+            <th>Date</th>
+            <th>Resolved Date</th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    <button onclick="refreshInquiries()" class="refresh-btn">Refresh Inquiries</button>
+</div>
+
+<script>
+    let userId = 1;
+    let userPolicies = [];
+
+    function openTab(tabId, event) {
+        document.getElementById('mainTabs').style.display = 'flex';
+        document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+        document.querySelectorAll('.nav-button').forEach(t => t.classList.remove('active'));
+
+        const contentElement = document.getElementById(tabId);
+        if (contentElement) {
+            contentElement.classList.add('active');
+        }
+
+        if (event && event.target) {
+            event.target.classList.add('active');
+        } else {
+            const navButton = document.querySelector(`.nav-button[onclick*="${tabId}"]`);
+            if (navButton) {
+                navButton.classList.add('active');
+            }
+        }
+
+        if (tabId === 'my-profile') refreshProfile();
+        if (tabId === 'manage-policies') loadAvailablePolicies();
+        if (tabId === 'submit-claim') loadClaimHistory();
+        if (tabId === 'payment-status') refreshPayments();
+        if (tabId === 'inquiry-history') refreshInquiries();
+    }
+
+    function refreshProfile() {
+        fetch(`/api/customer/profile`)
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error(`Failed to load profile: ${res.status} ${res.statusText}`);
+                }
+                return res.json();
+            })
+            .then(data => {
+                document.getElementById('name').textContent = data.name || 'N/A';
+                document.getElementById('username').textContent = data.username || 'N/A';
+                document.getElementById('email').textContent = data.email || 'N/A';
+                document.getElementById('phone').textContent = data.phone || 'N/A';
+                document.getElementById('accountStatus').textContent = data.isActive ? 'Active' : 'Inactive';
+                document.getElementById('memberSince').textContent = new Date(data.createdAt).toLocaleDateString();
+
+                document.getElementById('bankName').textContent = data.bankName || 'Not provided';
+                document.getElementById('accountNumber').textContent = data.accountNumber || 'Not provided';
+                document.getElementById('accountHolder').textContent = data.accountHolderName || 'Not provided';
+                document.getElementById('branch').textContent = data.branch || 'Not provided';
+
+                window.currentUserData = data;
+
+                return fetch(`/api/customer/policies`);
+            })
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error(`Failed to load policies: ${res.status} ${res.statusText}`);
+                }
+                return res.json();
+            })
+            .then(policies => {
+                userPolicies = policies;
+
+                const tbody = document.querySelector('#policiesTable tbody');
+                tbody.innerHTML = '';
+                policies.forEach(p => {
+                    tbody.innerHTML += `
+                            <tr>
+                                <td>${p.policyNumber}</td>
+                                <td>${p.coverage.includes('PREMIUM') ? 'Premium Health' : 'Standard Health'}</td>
+                                <td>LKR ${p.premiumAmount}</td>
+                                <td>${new Date(p.startDate).toLocaleDateString()}</td>
+                                <td>${new Date(p.endDate).toLocaleDateString()}</td>
+                                <td><span class="status-badge ${p.status.toLowerCase()}">${p.status}</span></td>
+                                <td>${p.coverage}</td>
+                            </tr>`;
+                });
+
+                const policySelect = document.getElementById('policySelect');
+                policySelect.innerHTML = '<option value="">Select a Policy</option>';
+                policies.forEach(p => {
+                    policySelect.innerHTML += `<option value="${p.id}" data-premium="${p.premiumAmount}" data-type="${p.coverage.includes('PREMIUM') ? 'PREMIUM' : 'STANDARD'}">${p.policyNumber} - ${p.coverage}</option>`;
+                });
+
+                document.getElementById('totalPolicies').textContent = policies.filter(p => p.status === 'ACTIVE').length;
+
+                return fetch(`/api/customer/claims`);
+            })
+            .then(res => {
+                if (!res.ok) {
+                    return [];
+                }
+                return res.json();
+            })
+            .then(claims => {
+                document.getElementById('totalClaims').textContent = claims.length;
+                document.getElementById('pendingClaims').textContent = claims.filter(c => c.status === 'PENDING').length;
+
+                return fetch(`/api/customer/payments/next-due`);
+            })
+            .then(res => {
+                if (!res.ok || res.status === 204) {
+                    return null;
+                }
+                return res.text().then(text => text ? JSON.parse(text) : null);
+            })
+            .then(nextPayment => {
+                if (nextPayment && nextPayment.dueDate) {
+                    document.getElementById('nextPaymentDue').textContent = `LKR ${nextPayment.amount} due on ${new Date(nextPayment.dueDate).toLocaleDateString()}`;
+                } else {
+                    document.getElementById('nextPaymentDue').textContent = 'No payments due';
+                }
+            })
+            .catch(err => {
+                if (err.message.includes('profile') || err.message.includes('policies')) {
+                    alert('Error loading profile data. Please try again or contact support.');
+                }
+            });
+    }
+
+    function submitClaim() {
+        const policySelect = document.getElementById('policySelect');
+        if (!policySelect.value) {
+            document.getElementById('claimMessage').textContent = 'Please select a policy';
+            document.getElementById('claimMessage').style.color = 'red';
+            return;
+        }
+
+        const claimAmount = parseFloat(document.getElementById('claimAmount').value);
+        if (isNaN(claimAmount) || claimAmount <= 0) {
+            document.getElementById('claimMessage').textContent = 'Please enter a valid claim amount';
+            document.getElementById('claimMessage').style.color = 'red';
+            return;
+        }
+
+        const selectedOption = policySelect.options[policySelect.selectedIndex];
+        const policyPremium = parseFloat(selectedOption.getAttribute('data-premium'));
+        if (claimAmount > policyPremium) {
+            document.getElementById('claimMessage').textContent = `Claim amount (LKR ${claimAmount}) cannot exceed policy premium amount (LKR ${policyPremium})`;
+            document.getElementById('claimMessage').style.color = 'red';
+            return;
+        }
+
+        const description = document.getElementById('description').value;
+        if (!description || description.trim() === '') {
+            document.getElementById('claimMessage').textContent = 'Please enter a claim description';
+            document.getElementById('claimMessage').style.color = 'red';
+            return;
+        }
+
+        const claimData = {
+            policyId: parseInt(policySelect.value),
+            amount: claimAmount,
+            description: description,
+            date: new Date().toISOString().split('T')[0]
+        };
+
+        fetch('/api/customer/claims', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(claimData)
+        })
+            .then(res => {
+                if (!res.ok) {
+                    return res.text().then(errorText => {
+                        try {
+                            const errorJson = JSON.parse(errorText);
+                            throw new Error(errorJson.message || `Server error: ${res.status}`);
+                        } catch (e) {
+                            throw new Error(`Server error ${res.status}: ${errorText}`);
+                        }
+                    });
+                }
+                return res.json();
+            })
+            .then(data => {
+                document.getElementById('claimMessage').textContent = 'Claim submitted successfully!';
+                document.getElementById('claimMessage').style.color = 'green';
+                cancelForm();
+                loadClaimHistory();
+            })
+            .catch(err => {
+                document.getElementById('claimMessage').textContent = `Error: ${err.message}`;
+                document.getElementById('claimMessage').style.color = 'red';
+            });
+    }
+
+    function loadClaimHistory() {
+        fetch('/api/customer/claims')
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error(`Failed to load claims: ${res.status} ${res.statusText}`);
+                }
+                return res.json();
+            })
+            .then(claims => {
+                const tbody = document.querySelector('#claimHistoryTable tbody');
+                tbody.innerHTML = '';
+
+                if (claims.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #999;">No claims submitted yet</td></tr>';
+                } else {
+                    claims.forEach((claim) => {
+                        const policyNumber = (claim.policy && claim.policy.policyNumber) ? claim.policy.policyNumber : 'N/A';
+                        let statusColor = '#6c757d';
+                        if (claim.status === 'APPROVED') statusColor = '#28a745';
+                        else if (claim.status === 'PENDING') statusColor = '#ffc107';
+                        else if (claim.status === 'REJECTED') statusColor = '#dc3545';
+
+                        const statusBadge = `<span style="background: ${statusColor}; color: white; padding: 4px 8px; border-radius: 3px; font-size: 12px;">${claim.status}</span>`;
+
+                        tbody.innerHTML += `
+                                <tr>
+                                    <td>${claim.claimId || claim.id}</td>
+                                    <td>${policyNumber}</td>
+                                    <td>LKR ${claim.amount}</td>
+                                    <td>${claim.notes || 'N/A'}</td>
+                                    <td>${statusBadge}</td>
+                                    <td>${claim.claimDate ? new Date(claim.claimDate).toLocaleDateString() : 'N/A'}</td>
+                                </tr>
+                            `;
+                    });
+                }
+            })
+            .catch(err => {
+                const tbody = document.querySelector('#claimHistoryTable tbody');
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: red;">Error loading claims</td></tr>';
+            });
+    }
+
+    function refreshPayments() {
+        fetch('/api/customer/claims/approved')
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error(`Failed to load approved claims: ${res.status} ${res.statusText}`);
+                }
+                return res.json();
+            })
+            .then(claims => {
+                const tbody = document.querySelector('#approvedClaimsTable tbody');
+                tbody.innerHTML = '';
+                if (claims.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #999;">No approved claims available</td></tr>';
+                } else {
+                    claims.forEach(claim => {
+                        tbody.innerHTML += `
+                                <tr>
+                                    <td>${claim.claimId}</td>
+                                    <td>${claim.policyNumber}</td>
+                                    <td>LKR ${claim.amount}</td>
+                                    <td>${claim.status}</td>
+                                    <td>${claim.claimDate}</td>
+                                    <td>
+                                        ${claim.status === 'APPROVED' ?
+                            `<button onclick="showPaymentModal('${claim.id}', ${claim.amount})" class="pay-btn">Pay Now</button>` :
+                            claim.status}
+                                    </td>
+                                </tr>
+                            `;
+                    });
+                }
+            })
+            .catch(err => {
+                const tbody = document.querySelector('#approvedClaimsTable tbody');
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: red;">Error loading approved claims. Please try logging in again.</td></tr>';
+            });
+
+        fetch('/api/customer/payments')
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error(`Failed to load payments: ${res.status} ${res.statusText}`);
+                }
+                return res.json();
+            })
+            .then(payments => {
+                const tbody = document.querySelector('#paymentHistoryTable tbody');
+                tbody.innerHTML = '';
+                if (payments.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #999;">No payment history available</td></tr>';
+                } else {
+                    payments.forEach(p => {
+                        const paymentType = p.claimId ? `Claim Payment (ID: ${p.claimId})` : 'Policy Purchase';
+                        const statusBadge = p.status === 'PAID' ?
+                            '<span style="background: #28a745; color: white; padding: 4px 8px; border-radius: 3px; font-size: 12px;">PAID</span>' :
+                            '<span style="background: #ffc107; color: black; padding: 4px 8px; border-radius: 3px; font-size: 12px;">PENDING</span>';
+                        tbody.innerHTML += `
+                                <tr>
+                                    <td>${p.id}</td>
+                                    <td>${paymentType}</td>
+                                    <td>LKR ${p.amount}</td>
+                                    <td>${statusBadge}</td>
+                                    <td>${p.paymentDate || p.dueDate || 'N/A'}</td>
+                                </tr>
+                            `;
+                    });
+                }
+            })
+            .catch(err => {
+                const tbody = document.querySelector('#paymentHistoryTable tbody');
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: red;">Error loading payment history</td></tr>';
+            });
+    }
+
+    function showPaymentModal(claimId, amount) {
+        document.getElementById('claimIdForPayment').value = claimId;
+        document.getElementById('paymentAmount').textContent = amount.toFixed(2);
+        document.getElementById('paymentModal').style.display = 'block';
+    }
+
+    function closePaymentModal() {
+        document.getElementById('paymentModal').style.display = 'none';
+        document.getElementById('paymentForm').reset();
+    }
+
+    function processPayment() {
+        const cardNumber = document.getElementById('cardNumber').value.replace(/\s/g, '');
+
+        if (cardNumber.length !== 16) {
+            alert('Please enter a valid 16-digit card number');
+            return;
+        }
+
+        const paymentData = {
+            claimId: parseInt(document.getElementById('claimIdForPayment').value),
+            amount: parseFloat(document.getElementById('paymentAmount').textContent),
+            cardNumber: cardNumber,
+            expiryDate: document.getElementById('expiryDate').value,
+            cvv: document.getElementById('cvv').value,
+            cardholderName: document.getElementById('cardholderName').value
+        };
+
+        fetch('/api/customer/payments', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(paymentData)
+        })
+            .then(res => {
+                if (!res.ok) throw new Error('Payment failed');
+                return res.json();
+            })
+            .then(data => {
+                alert('Payment processed successfully!');
+                closePaymentModal();
+                refreshPayments();
+            })
+            .catch(err => {
+                console.error(err);
+                alert('Error processing payment. Please try again.');
+            });
+    }
+
+    function submitInquiry() {
+        const inquiryData = {
+            type: document.getElementById('inquiryType').value,
+            title: document.getElementById('inquiryTitle').value,
+            description: document.getElementById('inquiryDescription').value
+        };
+
+        if (!inquiryData.type || !inquiryData.title || !inquiryData.description) {
+            document.getElementById('inquiryMessage').textContent = 'Please fill in all fields';
+            document.getElementById('inquiryMessage').style.color = 'red';
+            return;
+        }
+
+        fetch('/api/customer/inquiries', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(inquiryData)
+        })
+            .then(res => {
+                if (!res.ok) throw new Error('Failed to submit inquiry');
+                return res.json();
+            })
+            .then(data => {
+                document.getElementById('inquiryMessage').textContent = 'Inquiry submitted successfully!';
+                document.getElementById('inquiryMessage').style.color = 'green';
+                clearInquiryForm();
+                refreshInquiries();
+            })
+            .catch(err => {
+                console.error(err);
+                document.getElementById('inquiryMessage').textContent = 'Error submitting inquiry. Please try again.';
+                document.getElementById('inquiryMessage').style.color = 'red';
+            });
+    }
+
+    function clearInquiryForm() {
+        document.getElementById('inquiryForm').reset();
+        document.getElementById('inquiryMessage').textContent = '';
+    }
+
+    function refreshInquiries() {
+        fetch('/api/customer/inquiries')
+            .then(res => res.json())
+            .then(data => {
+                const tbody = document.querySelector('#inquiryTable tbody');
+                tbody.innerHTML = '';
+                if (data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No inquiries found</td></tr>';
+                } else {
+                    data.forEach(inquiry => {
+                        const statusBadge = inquiry.status === 'RESOLVED' ? 'resolved' : 'pending';
+                        tbody.innerHTML += `
+                                <tr>
+                                    <td>#${inquiry.id}</td>
+                                    <td>${inquiry.type}</td>
+                                    <td>${inquiry.title || inquiry.subject || 'N/A'}</td>
+                                    <td><span class="status-badge ${statusBadge}">${inquiry.status}</span></td>
+                                    <td>${new Date(inquiry.createdAt || inquiry.date).toLocaleDateString()}</td>
+                                    <td>${inquiry.resolutionDate ? new Date(inquiry.resolutionDate).toLocaleDateString() : '-'}</td>
+                                </tr>
+                            `;
+                    });
+                }
+            })
+            .catch(err => {
+                console.error('Error loading inquiries:', err);
+                const tbody = document.querySelector('#inquiryTable tbody');
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: red;">Error loading inquiries</td></tr>';
+            });
+    }
+
+    function cancelForm() {
+        document.querySelectorAll('input, textarea').forEach(el => el.value = '');
+    }
+
+    function formatCardNumber(input) {
+        let value = input.value.replace(/\D/g, '');
+        value = value.substring(0, 16);
+        value = value.replace(/(\d{4})(?=\d)/g, '$1 ');
+        input.value = value;
+    }
+
+    function setMinExpiryDate() {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        document.getElementById('expiryDate').setAttribute('min', `${year}-${month}`);
+    }
+
+    function openProfilePage() {
+        document.getElementById('mainTabs').style.display = 'none';
+        document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+        document.querySelectorAll('.nav-button').forEach(t => t.classList.remove('active'));
+        document.getElementById('my-profile').classList.add('active');
+        refreshProfile();
+    }
+
+    function backToHome() {
+        document.getElementById('mainTabs').style.display = 'flex';
+        openTab('manage-policies');
+    }
+
+    function toggleEditPersonalInfo() {
+        const display = document.getElementById('personalInfoDisplay');
+        const edit = document.getElementById('personalInfoEdit');
+
+        if (display.style.display === 'none') {
+            cancelEditPersonalInfo();
+        } else {
+            display.style.display = 'none';
+            edit.style.display = 'block';
+
+            document.getElementById('editName').value = window.currentUserData?.name || '';
+            document.getElementById('editEmail').value = window.currentUserData?.email || '';
+            document.getElementById('editPhone').value = window.currentUserData?.phone || '';
+
+            document.getElementById('editPersonalBtn').textContent = '✖ Cancel';
+        }
+    }
+
+    function cancelEditPersonalInfo() {
+        document.getElementById('personalInfoDisplay').style.display = 'grid';
+        document.getElementById('personalInfoEdit').style.display = 'none';
+        document.getElementById('editPersonalBtn').textContent = '✏️ Edit';
+        document.getElementById('personalInfoMessage').textContent = '';
+    }
+
+    function savePersonalInfo() {
+        const name = document.getElementById('editName').value.trim();
+        const email = document.getElementById('editEmail').value.trim();
+        const phone = document.getElementById('editPhone').value.trim();
+        const messageEl = document.getElementById('personalInfoMessage');
+
+        if (!name || !email || !phone) {
+            messageEl.textContent = '❌ All fields are required!';
+            messageEl.style.color = 'red';
+            return;
+        }
+
+        messageEl.textContent = '🔄 Saving...';
+        messageEl.style.color = 'blue';
+
+        fetch('/api/customer/update-profile', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, email, phone })
+        })
+            .then(res => {
+                if (!res.ok) throw new Error('Failed to update profile');
+                return res.json();
+            })
+            .then(data => {
+                messageEl.textContent = '✅ Profile updated successfully!';
+                messageEl.style.color = 'green';
+
+                document.getElementById('name').textContent = data.name;
+                document.getElementById('email').textContent = data.email;
+                document.getElementById('phone').textContent = data.phone;
+                window.currentUserData = data;
+
+                setTimeout(() => cancelEditPersonalInfo(), 1500);
+            })
+            .catch(err => {
+                console.error('Error updating profile:', err);
+                messageEl.textContent = '❌ Failed to update profile!';
+                messageEl.style.color = 'red';
+            });
+    }
+
+    function toggleEditBankInfo() {
+        const display = document.getElementById('bankInfoDisplay');
+        const edit = document.getElementById('bankInfoEdit');
+
+        if (display.style.display === 'none') {
+            cancelEditBankInfo();
+        } else {
+            display.style.display = 'none';
+            edit.style.display = 'block';
+
+            document.getElementById('editBankName').value = window.currentUserData?.bankName || '';
+            document.getElementById('editAccountNumber').value = window.currentUserData?.accountNumber || '';
+            document.getElementById('editAccountHolder').value = window.currentUserData?.accountHolderName || '';
+            document.getElementById('editBranch').value = window.currentUserData?.branch || '';
+
+            document.getElementById('editBankBtn').textContent = '✖ Cancel';
+        }
+    }
+
+    function cancelEditBankInfo() {
+        document.getElementById('bankInfoDisplay').style.display = 'grid';
+        document.getElementById('bankInfoEdit').style.display = 'none';
+        document.getElementById('editBankBtn').textContent = '✏️ Edit';
+        document.getElementById('bankInfoMessage').textContent = '';
+    }
+
+    function saveBankInfo() {
+        const bankName = document.getElementById('editBankName').value.trim();
+        const accountNumber = document.getElementById('editAccountNumber').value.trim();
+        const accountHolder = document.getElementById('editAccountHolder').value.trim();
+        const branch = document.getElementById('editBranch').value.trim();
+        const messageEl = document.getElementById('bankInfoMessage');
+
+        if (!bankName || !accountNumber || !accountHolder) {
+            messageEl.textContent = '❌ Bank name, account number, and account holder are required!';
+            messageEl.style.color = 'red';
+            return;
+        }
+
+        messageEl.textContent = '🔄 Saving bank details...';
+        messageEl.style.color = 'blue';
+
+        fetch('/api/customer/update-bank-info', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ bankName, accountNumber, accountHolderName: accountHolder, branch })
+        })
+            .then(res => {
+                if (!res.ok) throw new Error('Failed to update bank info');
+                return res.json();
+            })
+            .then(data => {
+                messageEl.textContent = '✅ Bank details updated successfully!';
+                messageEl.style.color = 'green';
+
+                document.getElementById('bankName').textContent = data.bankName || 'Not provided';
+                document.getElementById('accountNumber').textContent = data.accountNumber || 'Not provided';
+                document.getElementById('accountHolder').textContent = data.accountHolderName || 'Not provided';
+                document.getElementById('branch').textContent = data.branch || 'Not provided';
+                window.currentUserData = data;
+
+                setTimeout(() => cancelEditBankInfo(), 1500);
+            })
+            .catch(err => {
+                console.error('Error updating bank info:', err);
+                messageEl.textContent = '❌ Failed to update bank details!';
+                messageEl.style.color = 'red';
+            });
+    }
+
+    function logout() {
+        fetch('/api/auth/logout', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        })
+            .then(response => {
+                localStorage.clear();
+                sessionStorage.clear();
+                window.location.href = '/login.html';
+            })
+            .catch(error => {
+                console.error('Logout error:', error);
+                window.location.href = '/login.html';
+            });
+    }
+
+    function loadAvailablePolicies() {
+        loadMyPurchasedPolicies();
+
+        fetch('/api/customer/policies')
+            .then(res => res.json())
+            .then(userPolicies => {
+                const buySection = document.getElementById('buyNewPolicySection');
+                if (userPolicies && userPolicies.length > 0) {
+                    buySection.style.display = 'none';
+                } else {
+                    buySection.style.display = 'block';
+
+                    fetch('/api/customer/available-policies')
+                        .then(res => res.json())
+                        .then(policies => {
+                            const container = document.getElementById('availablePoliciesContainer');
+                            container.innerHTML = '';
+
+                            policies.forEach(policy => {
+                                const card = document.createElement('div');
+                                card.className = 'policy-card';
+                                card.onmouseover = () => card.style.transform = 'translateY(-5px)';
+                                card.onmouseout = () => card.style.transform = 'translateY(0)';
+
+                                card.innerHTML = `
+                                        <h4 style="margin: 0 0 15px 0; font-size: 24px;">${policy.coverageType}</h4>
+                                        <p style="margin: 10px 0; font-size: 14px; opacity: 0.9;">${policy.description}</p>
+                                        <div style="background: rgba(255,255,255,0.2); padding: 10px; border-radius: 5px; margin: 15px 0;">
+                                            <strong>Benefits:</strong><br>${policy.benefits}
+                                        </div>
+                                        <p style="margin: 10px 0;"><strong>Coverage Limit:</strong> ${policy.coverageLimit}</p>
+                                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
+                                            <span style="font-size: 28px; font-weight: bold; color: #399f47;">LKR ${policy.price}</span>
+                                            <button type="button" onclick="openPurchaseModal(${policy.id}, '${policy.coverageType}', ${policy.price})" class="buy-btn">Buy Now</button>
+                                        </div>
+                                    `;
+                                container.appendChild(card);
+                            });
+                        })
+                        .catch(err => {
+                            console.error('Error loading available policies:', err);
+                            const container = document.getElementById('availablePoliciesContainer');
+                            container.innerHTML = '<p style="color: red; text-align: center;">Error loading policies. Please try again later.</p>';
+                        });
+                }
+            })
+            .catch(err => {
+                console.error('Error checking user policies:', err);
+            });
+    }
+
+    function loadMyPurchasedPolicies() {
+        fetch('/api/customer/policies')
+            .then(res => res.json())
+            .then(policies => {
+                const tbody = document.querySelector('#myPurchasedPoliciesTable tbody');
+                tbody.innerHTML = '';
+
+                if (policies.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #999;">No policies purchased yet. Buy your first policy below!</td></tr>';
+                } else {
+                    policies.forEach(policy => {
+                        const statusColor = policy.status === 'ACTIVE' ? '#28a745' :
+                            policy.status === 'EXPIRED' ? '#dc3545' : '#6c757d';
+                        const statusBadge = `<span style="background: ${statusColor}; color: white; padding: 4px 8px; border-radius: 3px; font-size: 12px;">${policy.status}</span>`;
+
+                        tbody.innerHTML += `
+                                <tr>
+                                    <td><strong>${policy.policyNumber}</strong></td>
+                                    <td>${policy.coverageType || policy.coverage}</td>
+                                    <td><strong>LKR ${policy.premiumAmount}</strong></td>
+                                    <td>${new Date(policy.startDate).toLocaleDateString()}</td>
+                                    <td>${new Date(policy.endDate).toLocaleDateString()}</td>
+                                    <td>${statusBadge}</td>
+                                    <td style="font-size: 13px;">${policy.coverage}</td>
+                                </tr>
+                            `;
+                    });
+                }
+            })
+            .catch(err => {
+                console.error('Error loading purchased policies:', err);
+                const tbody = document.querySelector('#myPurchasedPoliciesTable tbody');
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: red;">Error loading your policies</td></tr>';
+            });
+    }
+
+    function openPurchaseModal(policyId, coverageType, price) {
+        document.getElementById('selectedPolicyId').value = policyId;
+        document.getElementById('modalPolicyType').textContent = coverageType;
+        document.getElementById('modalPolicyPrice').textContent = price;
+        document.getElementById('purchasePolicyModal').style.display = 'block';
+        document.getElementById('purchaseModalOverlay').style.display = 'block';
+        document.getElementById('purchaseMessage').textContent = '';
+
+        document.getElementById('purchaseCardNumber').value = '';
+        document.getElementById('purchaseExpiryDate').value = '';
+        document.getElementById('purchaseCVV').value = '';
+        document.getElementById('purchaseCardholderName').value = '';
+    }
+
+    function closePurchaseModal() {
+        document.getElementById('purchasePolicyModal').style.display = 'none';
+        document.getElementById('purchaseModalOverlay').style.display = 'none';
+    }
+
+    function formatExpiryDate(input) {
+        let value = input.value.replace(/\D/g, '');
+        if (value.length >= 2) {
+            value = value.substring(0, 2) + '/' + value.substring(2, 4);
+        }
+        input.value = value;
+    }
+
+    function confirmPolicyPurchase() {
+        const policyId = document.getElementById('selectedPolicyId').value;
+        const cardNumber = document.getElementById('purchaseCardNumber').value.replace(/\s/g, '');
+        const expiryDate = document.getElementById('purchaseExpiryDate').value;
+        const cvv = document.getElementById('purchaseCVV').value;
+        const cardholderName = document.getElementById('purchaseCardholderName').value;
+
+        if (!cardNumber || cardNumber.length < 13) {
+            document.getElementById('purchaseMessage').textContent = 'Please enter a valid card number';
+            document.getElementById('purchaseMessage').style.color = 'red';
+            return;
+        }
+        if (!expiryDate || !expiryDate.match(/^\d{2}\/\d{2}$/)) {
+            document.getElementById('purchaseMessage').textContent = 'Please enter a valid expiry date (MM/YY)';
+            document.getElementById('purchaseMessage').style.color = 'red';
+            return;
+        }
+        if (!cvv || cvv.length < 3) {
+            document.getElementById('purchaseMessage').textContent = 'Please enter a valid CVV';
+            document.getElementById('purchaseMessage').style.color = 'red';
+            return;
+        }
+        if (!cardholderName) {
+            document.getElementById('purchaseMessage').textContent = 'Please enter cardholder name';
+            document.getElementById('purchaseMessage').style.color = 'red';
+            return;
+        }
+
+        const purchaseData = {
+            policyInfoId: parseInt(policyId),
+            cardNumber: cardNumber,
+            cardHolderName: cardholderName,
+            expiryDate: expiryDate,
+            cvv: cvv
+        };
+
+        fetch('/api/customer/purchase-policy', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(purchaseData)
+        })
+            .then(res => {
+                if (!res.ok) throw new Error('Purchase failed');
+                return res.json();
+            })
+            .then(data => {
+                document.getElementById('purchaseMessage').textContent = 'Policy purchased successfully! Policy Number: ' + data.policyNumber;
+                document.getElementById('purchaseMessage').style.color = 'green';
+
+                setTimeout(() => {
+                    closePurchaseModal();
+                    loadMyPurchasedPolicies();
+                    refreshProfile();
+                }, 2000);
+            })
+            .catch(err => {
+                console.error('Error purchasing policy:', err);
+                document.getElementById('purchaseMessage').textContent = 'Error purchasing policy. Please try again.';
+                document.getElementById('purchaseMessage').style.color = 'red';
+            });
+    }
+
+    window.onload = function() {
+        setMinExpiryDate();
+        openTab('manage-policies');
+    };
+</script>
+
+<footer class="bg-white text-black py-4 z-10 relative border-t border-gray-200">
+    <div class="container mx-auto text-center">
+        <p>&copy; 2025 HealthInsure | <a href="/contact.html" class="text-black underline hover:text-gray-700">Contact Support</a> | <a href="/privacy-policy.html" class="text-black underline hover:text-gray-700">Privacy Policy</a></p>
+        <p class="text-sm mt-1">All rights reserved.</p>
+    </div>
+</footer>
+</body>
+</html>

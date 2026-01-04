@@ -1,0 +1,1262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR Manager - HealthInsure</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+    <style>
+        :root {
+            --bg-gradient-1: #020617;
+            --bg-gradient-2: #0f172a;
+            --accent-cyan: #22d3ee;
+            --accent-violet: #a855f7;
+            --accent-pink: #ec4899;
+            --card-bg: rgba(15, 23, 42, 0.85);
+            --border-subtle: rgba(148, 163, 184, 0.35);
+            --text-main: #e5e7eb;
+            --text-muted: #9ca3af;
+            --danger: #f97373;
+            --success: #22c55e;
+            --warning: #f59e0b;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: radial-gradient(circle at top, #0f172a 0, #020617 55%, #000 100%);
+            min-height: 100vh;
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, -system-ui, sans-serif;
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        .bg-orbit {
+            position: fixed;
+            inset: 0;
+            overflow: hidden;
+            z-index: -2;
+        }
+
+        .bg-orbit::before, .bg-orbit::after {
+            content: "";
+            position: absolute;
+            width: 480px;
+            height: 480px;
+            border-radius: 999px;
+            background: radial-gradient(circle at 30% 30%, rgba(56, 189, 248, 0.75), transparent 60%);
+            filter: blur(4px);
+            opacity: 0.55;
+            animation: floatOrb 18s ease-in-out infinite;
+        }
+
+        .bg-orbit::after {
+            top: auto; left: auto; right: -120px; bottom: -160px;
+            background: radial-gradient(circle at 70% 70%, rgba(168, 85, 247, 0.85), transparent 60%);
+            animation-delay: -9s;
+        }
+
+        .bg-grid {
+            position: fixed;
+            inset: 0;
+            background-image:
+                    linear-gradient(to right, rgba(148, 163, 184, 0.08) 1px, transparent 1px),
+                    linear-gradient(to bottom, rgba(148, 163, 184, 0.08) 1px, transparent 1px);
+            background-size: 40px 40px;
+            opacity: 0.7;
+            mask-image: radial-gradient(circle at center, black 0, black 45%, transparent 80%);
+            z-index: -1;
+            animation: gridDrift 36s linear infinite;
+        }
+
+        @keyframes floatOrb {
+            0%, 100% { transform: translate3d(-160px, -120px, 0) scale(1); }
+            25% { transform: translate3d(40px, -200px, 0) scale(1.05); }
+            50% { transform: translate3d(220px, 40px, 0) scale(1.08); }
+            75% { transform: translate3d(-40px, 140px, 0) scale(1.03); }
+        }
+
+        @keyframes gridDrift {
+            0% { transform: translate3d(0, 0, 0) scale(1); }
+            50% { transform: translate3d(-40px, -20px, 0) scale(1.02); }
+            100% { transform: translate3d(0, 0, 0) scale(1); }
+        }
+
+        /* Header */
+        header {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+            padding: 1.5rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .brand-lockup {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .brand-mark {
+            width: 80px;
+            height: 80px;
+            border-radius: 16px;
+            background: radial-gradient(circle at 30% 20%, #e5faff 0, #22d3ee 40%, #0ea5e9 75%, #0f172a 100%);
+            box-shadow:
+                    0 0 0 1px rgba(148, 163, 184, 0.3),
+                    0 18px 40px rgba(15, 23, 42, 0.9),
+                    0 0 30px rgba(34, 211, 238, 0.4);
+            position: relative;
+            overflow: hidden;
+            display: grid;
+            place-items: center;
+            animation: logoFloat 3s ease-in-out infinite, logoGlow 2s ease-in-out infinite;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .brand-mark:hover {
+            transform: scale(1.05) rotate(5deg);
+            box-shadow:
+                    0 0 0 1px rgba(148, 163, 184, 0.5),
+                    0 25px 50px rgba(15, 23, 42, 1),
+                    0 0 50px rgba(34, 211, 238, 0.6);
+        }
+
+        .brand-mark::before {
+            content: "";
+            position: absolute;
+            inset: -2px;
+            border-radius: 18px;
+            background: linear-gradient(45deg, rgba(34, 211, 238, 0.8), rgba(168, 85, 247, 0.8), rgba(34, 211, 238, 0.8));
+            background-size: 200% 200%;
+            opacity: 0;
+            z-index: -1;
+            animation: logoShimmer 3s ease-in-out infinite;
+        }
+
+        .brand-mark img {
+            width: 72px;
+            height: 72px;
+            object-fit: contain;
+            border-radius: 12px;
+            background: #0f172a;
+            box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.35);
+            animation: logoImagePulse 2.5s ease-in-out infinite;
+            transition: transform 0.3s ease;
+        }
+
+        .brand-mark:hover img {
+            transform: scale(1.08);
+        }
+
+        @keyframes logoFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+        }
+
+        @keyframes logoGlow {
+            0%, 100% {
+                box-shadow:
+                        0 0 0 1px rgba(148, 163, 184, 0.3),
+                        0 18px 40px rgba(15, 23, 42, 0.9),
+                        0 0 30px rgba(34, 211, 238, 0.4);
+            }
+            50% {
+                box-shadow:
+                        0 0 0 1px rgba(148, 163, 184, 0.4),
+                        0 20px 45px rgba(15, 23, 42, 1),
+                        0 0 40px rgba(34, 211, 238, 0.6);
+            }
+        }
+
+        @keyframes logoShimmer {
+            0% { background-position: 0% 50%; opacity: 0; }
+            50% { opacity: 0.3; }
+            100% { background-position: 200% 50%; opacity: 0; }
+        }
+
+        @keyframes logoImagePulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.02); opacity: 0.95; }
+        }
+
+        .brand-text-main {
+            font-size: 1.8rem;
+            font-weight: 600;
+            letter-spacing: 0.09em;
+            text-transform: uppercase;
+            color: #e5e7eb;
+        }
+
+        .brand-text-sub {
+            margin-top: 3px;
+            font-size: 0.78rem;
+            letter-spacing: 0.24em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        header h1 {
+            font-weight: 600;
+            font-size: 1.8rem;
+            letter-spacing: 0.09em;
+            text-transform: uppercase;
+            color: #e5e7eb;
+        }
+
+        header p {
+            font-size: 0.78rem;
+            letter-spacing: 0.24em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-top: 3px;
+        }
+
+        /* Main Container */
+        .main-glass {
+            background:
+                    radial-gradient(circle at 0 0, rgba(148, 163, 184, 0.18), transparent 55%),
+                    linear-gradient(135deg, rgba(15, 23, 42, 0.92), rgba(15, 23, 42, 0.86));
+            box-shadow:
+                    0 25px 60px rgba(15, 23, 42, 0.95),
+                    0 0 0 1px rgba(148, 163, 184, 0.4);
+            border: 1px solid rgba(148, 163, 184, 0.35);
+            border-radius: 22px;
+            max-width: 1280px;
+            margin: 32px auto;
+            padding: 2.5rem 2.1rem 2rem;
+            position: relative;
+            z-index: 2;
+            animation: cardEnter 1.2s cubic-bezier(.68,-0.55,.27,1.55) both;
+        }
+
+        @keyframes cardEnter {
+            0% { opacity: 0; transform: translateY(60px) scale(0.97); }
+            60% { opacity: 1; transform: translateY(-8px) scale(1.015); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+            gap: 1rem;
+            padding: 1rem;
+            max-width: 800px;
+            margin: 2rem auto;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            border-radius: 16px;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 0.5em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            min-width: 140px;
+            animation: cardEnter 0.7s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+        }
+
+        .tab:nth-child(1) { animation-delay: 0.1s; }
+        .tab:nth-child(2) { animation-delay: 0.2s; }
+        .tab:nth-child(3) { animation-delay: 0.3s; }
+
+        .tab:hover {
+            background: rgba(15, 23, 42, 0.8);
+            border-color: var(--accent-cyan);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(34, 211, 238, 0.3);
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, #22d3ee, #a855f7);
+            border-color: transparent;
+            color: #0b1120;
+            box-shadow: 0 8px 20px rgba(34, 211, 238, 0.4);
+        }
+
+        .tab i {
+            font-size: 1rem;
+        }
+
+        .nav-title {
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+
+        .nav-subtitle {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        .tab.active .nav-subtitle {
+            color: rgba(11, 17, 32, 0.7);
+        }
+
+        /* Content */
+        .content {
+            background:
+                    radial-gradient(circle at 0 0, rgba(148, 163, 184, 0.18), transparent 55%),
+                    linear-gradient(135deg, rgba(15, 23, 42, 0.92), rgba(15, 23, 42, 0.86));
+            border: 1px solid rgba(148, 163, 184, 0.35);
+            border-radius: 18px;
+            padding: 2.2rem 1.2rem 1.1rem;
+            margin: 32px auto 0;
+            box-shadow: 0 25px 60px rgba(15, 23, 42, 0.95);
+            display: none;
+            animation: fadeIn 0.6s cubic-bezier(.54,-0.24,.62,1.43) both;
+        }
+
+        .content.active { display: block; }
+
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: translateY(40px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .content h3 {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-main);
+        }
+
+        .content h4 {
+            font-size: 1.125rem;
+            font-weight: 500;
+            margin: 2rem 0 1rem 0;
+            color: var(--text-main);
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 17px;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: var(--text-main);
+            display: block;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            background: radial-gradient(circle at 0 0, rgba(148, 163, 184, 0.18), transparent 60%);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 0.875rem 1rem;
+            font-size: 0.875rem;
+            color: var(--text-main);
+            font-family: inherit;
+            transition: all 0.2s ease;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 0 1px rgba(34, 211, 238, 0.3), 0 0 0 12px rgba(15, 23, 42, 0.8);
+            background-color: rgba(15, 23, 42, 0.9);
+            transform: translateY(-1px);
+        }
+
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2364748b' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.7rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+            padding-right: 2.8rem;
+            cursor: pointer;
+        }
+
+        select:focus {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2322d3ee' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+        }
+
+        select option {
+            background: #0f172a;
+            color: var(--text-main);
+        }
+
+        /* Buttons */
+        .btn, .btn-info, .btn-danger, .btn-success {
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            padding: 0.82rem 2rem;
+            font-size: 1rem;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.2s ease;
+            margin: 3px 8px 3px 0;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45em;
+            font-family: inherit;
+            text-decoration: none;
+        }
+
+        .btn, .btn-info {
+            background: linear-gradient(135deg, #22d3ee, #a855f7);
+            color: #0b1120;
+            box-shadow: 0 8px 20px rgba(8, 47, 73, 0.7);
+        }
+
+        .btn:hover, .btn-info:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.05);
+            box-shadow: 0 12px 30px rgba(8, 47, 73, 0.9);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #f97373, #ef4444);
+            color: #fff;
+            box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
+        }
+
+        .btn-danger:hover {
+            box-shadow: 0 12px 30px rgba(239, 68, 68, 0.6);
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: #fff;
+            box-shadow: 0 8px 20px rgba(34, 197, 94, 0.4);
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(34, 197, 94, 0.6);
+        }
+
+        .logout-btn {
+            background: linear-gradient(135deg, #22d3ee, #a855f7);
+            color: #0b1120;
+            margin-left: 12px;
+            padding: 10px 20px;
+            border-radius: 999px;
+            box-shadow: 0 8px 20px rgba(8, 47, 73, 0.7);
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .logout-btn:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.05);
+            box-shadow: 0 12px 30px rgba(8, 47, 73, 0.9);
+        }
+
+        /* Messages */
+        .message {
+            padding: 12px 21px 13px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 500;
+            margin-top: 9px;
+            margin-bottom: 4px;
+            box-shadow: 0 1px 6px rgba(0,0,0,0.05);
+            border: 1px solid var(--border-subtle);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .success {
+            background: rgba(22, 163, 74, 0.2);
+            border-color: rgba(22, 163, 74, 0.4);
+            color: #bbf7d0;
+        }
+
+        .error {
+            background: rgba(127, 29, 29, 0.7);
+            border-color: rgba(248, 113, 113, 0.8);
+            color: #fecaca;
+        }
+
+        /* Tables */
+        .beautiful-table {
+            background:
+                    radial-gradient(circle at 0 0, rgba(148, 163, 184, 0.18), transparent 55%),
+                    linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 0.9));
+            border: 1px solid rgba(148, 163, 184, 0.35);
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 25px 60px rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            margin: 20px 0;
+        }
+
+        .beautiful-table table {
+            width: 100%;
+            border-collapse: collapse;
+            background: transparent;
+        }
+
+        .beautiful-table th {
+            background: linear-gradient(135deg, rgba(34, 211, 238, 0.3), rgba(168, 85, 247, 0.3));
+            color: var(--text-main);
+            padding: 15px 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+        }
+
+        .beautiful-table td {
+            padding: 12px;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+            color: var(--text-main);
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+        }
+
+        .beautiful-table tr:hover {
+            background: rgba(34, 211, 238, 0.1);
+            transform: scale(1.01);
+            transition: all 0.2s ease;
+        }
+
+        .beautiful-table tr:hover td {
+            color: var(--accent-cyan);
+        }
+
+        .beautiful-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Stats */
+        .stat-card {
+            background:
+                    radial-gradient(circle at 0 0, rgba(148, 163, 184, 0.18), transparent 55%),
+                    linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.85));
+            border: 1px solid rgba(148, 163, 184, 0.35);
+            padding: 22px 8px 18px;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px) scale(1.02);
+            border-color: var(--accent-cyan);
+            box-shadow: 0 12px 40px rgba(34, 211, 238, 0.3);
+        }
+
+        .stat-card h3 {
+            margin: 4px 0 4px 0;
+            color: var(--accent-cyan);
+            font-size: 2.1rem;
+            font-weight: 700;
+        }
+
+        .stat-card p {
+            margin: 0;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+        }
+
+        .modal-content {
+            background:
+                    radial-gradient(circle at 0 0, rgba(148, 163, 184, 0.18), transparent 55%),
+                    linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 0.9));
+            margin: 5% auto;
+            padding: 30px;
+            border: 1px solid rgba(148, 163, 184, 0.35);
+            width: 90%;
+            max-width: 500px;
+            border-radius: 22px;
+            box-shadow: 0 25px 60px rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            color: var(--text-main);
+        }
+
+        .close {
+            color: var(--text-muted);
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .close:hover {
+            color: var(--accent-cyan);
+        }
+
+        /* Action Buttons */
+        .action-btn {
+            padding: 6px 12px;
+            margin: 0 2px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .edit-btn {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: white;
+        }
+
+        .delete-btn {
+            background: linear-gradient(135deg, #f97373, #ef4444);
+            color: white;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-glass {
+                margin: 16px;
+                padding: 1.5rem 1rem;
+            }
+
+            .tabs {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .tab {
+                width: 100%;
+                max-width: 300px;
+                margin: 4px 0;
+            }
+
+            header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .brand-lockup {
+                justify-content: center;
+            }
+
+            .brand-mark {
+                width: 60px;
+                height: 60px;
+            }
+
+            .brand-mark img {
+                width: 54px;
+                height: 54px;
+            }
+
+            .brand-text-main {
+                font-size: 1.4rem;
+            }
+        }
+    </style>
+    <base target="_blank">
+</head>
+<body>
+<div class="bg-orbit"></div>
+<div class="bg-grid"></div>
+
+<header>
+    <div class="header-container">
+        <div class="brand-lockup">
+            <div class="brand-mark">
+                <img src="Lanka.jpeg" alt="HealthInsure Logo">
+            </div>
+            <div>
+                <div class="brand-text-main">HealthInsure - HR Manager</div>
+                <div class="brand-text-sub">Efficient, Secure, Reliable</div>
+            </div>
+        </div>
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <button onclick="logout()" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </div>
+    </div>
+</header>
+
+<div class="main-glass">
+    <div class="tabs" id="mainTabs">
+        <div class="tab active" onclick="openTab('manage-customers', event)">
+            <i class="fas fa-users"></i>
+            <div>
+                <div class="nav-title">Manage Users</div>
+                <div class="nav-subtitle">View and manage users</div>
+            </div>
+        </div>
+        <div class="tab" onclick="openTab('process-payroll', event)">
+            <i class="fas fa-money-bill-wave"></i>
+            <div>
+                <div class="nav-title">Process Payroll</div>
+                <div class="nav-subtitle">Manage payroll processing</div>
+            </div>
+        </div>
+        <div class="tab" onclick="openTab('generate-report', event)">
+            <i class="fas fa-chart-bar"></i>
+            <div>
+                <div class="nav-title">Generate Report</div>
+                <div class="nav-subtitle">Create HR reports</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="manage-customers" class="content active">
+        <h3>Manage Users</h3>
+        <form id="customerForm">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" placeholder="Username" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" placeholder="Email" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" placeholder="Password" required>
+            </div>
+            <div class="form-group">
+                <label for="phone">Phone Number</label>
+                <input type="tel" id="phone" placeholder="Phone Number" required>
+            </div>
+            <button type="button" onclick="createCustomer()" class="btn">Create Customer</button>
+            <button type="button" onclick="cancelForm()" class="btn btn-danger">Cancel</button>
+        </form>
+        <p class="message" id="customerMessage"></p>
+
+        <h4>Customers</h4>
+        <div class="beautiful-table">
+            <table id="customerTable">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Edit Customer Modal -->
+    <div id="editCustomerModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeEditModal()">&times;</span>
+            <h3>Edit Customer</h3>
+            <form id="editCustomerForm">
+                <input type="hidden" id="editCustomerId">
+                <div class="form-group">
+                    <label for="editUsername">Username</label>
+                    <input type="text" id="editUsername" placeholder="Username" required>
+                </div>
+                <div class="form-group">
+                    <label for="editName">Name</label>
+                    <input type="text" id="editName" placeholder="Name">
+                </div>
+                <div class="form-group">
+                    <label for="editEmail">Email</label>
+                    <input type="email" id="editEmail" placeholder="Email" required>
+                </div>
+                <div class="form-group">
+                    <label for="editPhone">Phone Number</label>
+                    <input type="tel" id="editPhone" placeholder="Phone Number" required>
+                </div>
+                <div class="form-group">
+                    <label for="editPassword">New Password (leave blank to keep current)</label>
+                    <input type="password" id="editPassword" placeholder="New Password">
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button type="button" onclick="updateCustomer()" class="btn" style="flex: 1;">Update Customer</button>
+                    <button type="button" onclick="closeEditModal()" class="btn btn-danger" style="flex: 1;">Cancel</button>
+                </div>
+            </form>
+            <p class="message" id="editMessage"></p>
+        </div>
+    </div>
+
+    <div id="process-payroll" class="content">
+        <h3>Process Payroll</h3>
+
+        <div style="margin-bottom: 30px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <h4 style="margin: 0;">Internal Staff List</h4>
+                <button onclick="loadEmployeesList()" class="btn-success">Refresh</button>
+            </div>
+            <div class="beautiful-table">
+                <table id="employeesListTable">
+                    <thead>
+                    <tr>
+                        <th>User ID</th>
+                        <th>Name</th>
+                        <th>Role</th>
+                        <th>Department</th>
+                        <th>Salary (LKR)</th>
+                        <th>Employee Record</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr><td colspan="7" style="text-align: center; padding: 20px;">Loading employees...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <h4>Process Payroll for Selected Employee</h4>
+        <form id="payrollForm">
+            <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                <div class="form-group" style="flex: 1; margin-bottom: 0;">
+                    <label for="employeeId">User ID (not Employee ID)</label>
+                    <input type="number" id="employeeId" placeholder="User ID (not Employee ID)" required>
+                </div>
+                <button type="button" onclick="searchEmployee()" class="btn" style="align-self: flex-end;">Search User</button>
+            </div>
+            <div id="employeeInfo" style="display: none; background: rgba(34, 197, 94, 0.1); padding: 15px; border-radius: 12px; margin-bottom: 15px; border-left: 4px solid #22c55e;">
+                <p style="margin: 5px 0;"><strong>User Found:</strong> <span id="employeeName"></span></p>
+                <p style="margin: 5px 0;"><strong>User ID:</strong> <span id="employeeUserId"></span></p>
+                <p style="margin: 5px 0;"><strong>Role:</strong> <span id="employeeUserRole"></span></p>
+                <p style="margin: 5px 0;"><strong>Department:</strong> <span id="employeeDepartment"></span></p>
+                <p style="margin: 5px 0;"><strong>Current Salary:</strong> LKR <span id="employeeSalary"></span></p>
+                <p style="margin: 5px 0;"><strong>Employee Record ID:</strong> <span id="employeeRecordId"></span></p>
+            </div>
+            <div class="form-group">
+                <label for="amount">Amount</label>
+                <input type="number" id="amount" placeholder="Amount" required>
+            </div>
+            <div class="form-group">
+                <label for="payrollDate">Date</label>
+                <input type="date" id="payrollDate" required>
+            </div>
+            <div class="form-group">
+                <label for="payrollStatus">Status</label>
+                <select id="payrollStatus">
+                    <option value="PENDING">Pending</option>
+                    <option value="PAID">Paid</option>
+                </select>
+            </div>
+            <button type="button" onclick="processPayroll()" class="btn">Process Payroll</button>
+            <button type="button" onclick="cancelForm()" class="btn btn-danger">Cancel</button>
+        </form>
+        <p class="message" id="payrollMessage"></p>
+
+        <h4>Payroll History</h4>
+        <div style="margin: 20px 0; display: flex; gap: 10px; align-items: center;">
+            <input type="text" id="searchPayroll" placeholder="Search by employee ID..." style="flex: 1; padding: 8px; border: 1px solid var(--border-subtle); border-radius: 12px; background: rgba(15, 23, 42, 0.6); color: var(--text-main);">
+            <button onclick="searchPayrollHistory()" class="btn">Search</button>
+            <button onclick="loadPayrollHistory()" class="btn-success">Show All</button>
+        </div>
+        <div class="beautiful-table">
+            <table id="payrollTable">
+                <thead><tr><th>ID</th><th>Employee ID</th><th>Employee Name</th><th>Amount</th><th>Date</th><th>Status</th><th>Action</th></tr></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="generate-report" class="content">
+        <h3>Generate HR Report</h3>
+        <form id="reportForm">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="form-group">
+                    <label for="startDate">Start Date</label>
+                    <input type="date" id="startDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="endDate">End Date</label>
+                    <input type="date" id="endDate" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="reportType">Report Type</label>
+                <select id="reportType" required>
+                    <option value="ALL">All Data (Customers & Payroll)</option>
+                    <option value="CUSTOMERS">Customers Only</option>
+                    <option value="PAYROLL">Payroll Only</option>
+                    <option value="DETAILED">Detailed Report</option>
+                </select>
+            </div>
+            <div style="margin-top: 20px; display: flex; gap: 10px;">
+                <button type="button" onclick="previewHRReport()" class="btn-info">Preview Report</button>
+                <button type="button" onclick="generateReport()" class="btn-success">Generate & Download Report</button>
+            </div>
+        </form>
+        <p class="message" id="reportMessage"></p>
+
+        <!-- Report Preview -->
+        <div id="reportPreview" style="display: none; margin-top: 30px; background: rgba(15, 23, 42, 0.8); padding: 20px; border-radius: 18px; border: 1px solid rgba(34, 211, 238, 0.4);">
+            <h4>Report Preview</h4>
+            <p><strong>Period:</strong> <span id="previewPeriod"></span></p>
+            <p><strong>Type:</strong> <span id="previewType"></span></p>
+            <div id="reportStats" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openTab(tabId, event) {
+        document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+
+        if (event && event.currentTarget) {
+            event.currentTarget.classList.add('active');
+        }
+
+        if (tabId === 'manage-customers') loadCustomers();
+        if (tabId === 'process-payroll') {
+            loadEmployeesList();
+            loadPayrollHistory();
+        }
+    }
+
+    function loadCustomers() {
+        fetch('/api/hr/customers')
+            .then(res => res.json())
+            .then(data => {
+                const tbody = document.querySelector('#customerTable tbody');
+                tbody.innerHTML = '';
+                data.forEach(customer => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${customer.id}</td>
+                            <td>${customer.username}</td>
+                            <td>${customer.name || ''}</td>
+                            <td>${customer.email}</td>
+                            <td>${customer.phone}</td>
+                            <td>${customer.isActive ? 'Active' : 'Inactive'}</td>
+                            <td>
+                                <button class="action-btn edit-btn" onclick="openEditModal(${customer.id}, '${customer.username}', '${customer.name || ''}', '${customer.email}', '${customer.phone}')">Edit</button>
+                                <button class="action-btn delete-btn" onclick="deleteCustomer(${customer.id})">Delete</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }).catch(err => console.error(err));
+    }
+
+    function createCustomer() {
+        const dto = {
+            username: document.getElementById('username').value,
+            email: document.getElementById('email').value,
+            password: document.getElementById('password').value,
+            phone: document.getElementById('phone').value,
+            role: 'CUSTOMER'
+        };
+
+        fetch('/api/hr/customers', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(dto)
+        })
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('customerMessage').textContent = 'Customer created successfully!';
+                document.getElementById('customerMessage').className = 'message success';
+                loadCustomers();
+                cancelForm();
+            })
+            .catch(err => {
+                console.error(err);
+                document.getElementById('customerMessage').textContent = 'Error creating customer!';
+                document.getElementById('customerMessage').className = 'message error';
+            });
+    }
+
+    function searchEmployee() {
+        const userId = document.getElementById('employeeId').value;
+        if (!userId) {
+            alert('Please enter a User ID');
+            return;
+        }
+
+        document.getElementById('payrollMessage').textContent = 'Searching...';
+        document.getElementById('payrollMessage').className = 'message';
+
+        fetch(`/api/hr/search-employee-by-user/${userId}`)
+            .then(res => {
+                if (!res.ok) {
+                    return res.text().then(text => {
+                        throw new Error(text || 'User not found');
+                    });
+                }
+                return res.json();
+            })
+            .then(data => {
+                if (data) {
+                    document.getElementById('employeeName').textContent = data.name || 'Unknown';
+                    document.getElementById('employeeUserId').textContent = data.userId || 'Unknown';
+                    document.getElementById('employeeUserRole').textContent = data.userRole || 'Unknown';
+                    document.getElementById('employeeDepartment').textContent = data.department || 'Not set';
+                    document.getElementById('employeeSalary').textContent = (data.salary || 0).toLocaleString();
+                    document.getElementById('employeeRecordId').textContent = data.id || 'N/A';
+                    document.getElementById('employeeInfo').style.display = 'block';
+                    document.getElementById('payrollMessage').textContent = '✅ User found! Employee record ready for payroll processing.';
+                    document.getElementById('payrollMessage').className = 'message success';
+
+                    window.currentEmployeeId = data.id;
+                }
+            })
+            .catch(err => {
+                document.getElementById('employeeInfo').style.display = 'none';
+                document.getElementById('payrollMessage').textContent = '❌ Error: ' + err.message;
+                document.getElementById('payrollMessage').className = 'message error';
+                console.error('Error:', err);
+            });
+    }
+
+    function processPayroll() {
+        if (!window.currentEmployeeId) {
+            alert('Please search for a user first using the "Search User" button!');
+            document.getElementById('payrollMessage').textContent = '❌ Please search for a user first!';
+            document.getElementById('payrollMessage').className = 'message error';
+            return;
+        }
+
+        const dto = {
+            employeeId: window.currentEmployeeId,
+            amount: document.getElementById('amount').value,
+            date: document.getElementById('payrollDate').value,
+            status: document.getElementById('payrollStatus').value
+        };
+
+        fetch('/api/hr/payroll', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(dto)
+        })
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('payrollMessage').textContent = '✅ Payroll processed successfully!';
+                document.getElementById('payrollMessage').className = 'message success';
+                loadPayrollHistory();
+                cancelForm();
+                window.currentEmployeeId = null;
+            })
+            .catch(err => {
+                console.error(err);
+                document.getElementById('payrollMessage').textContent = '❌ Error processing payroll!';
+                document.getElementById('payrollMessage').className = 'message error';
+            });
+    }
+
+    function loadEmployeesList() {
+        fetch('/api/hr/employees-list')
+            .then(res => res.json())
+            .then(data => {
+                const tbody = document.querySelector('#employeesListTable tbody');
+                tbody.innerHTML = '';
+                if (data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 20px;">No internal staff found</td></tr>';
+                    return;
+                }
+                data.forEach(emp => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td><strong>${emp.userId}</strong></td>
+                            <td>${emp.name}</td>
+                            <td><span style="background: linear-gradient(135deg, #22d3ee, #a855f7); color: #0b1120; padding: 2px 8px; border-radius: 3px; font-size: 0.9em;">${emp.userRole}</span></td>
+                            <td>${emp.department || 'Not Set'}</td>
+                            <td>${emp.salary ? emp.salary.toLocaleString() : '0'}</td>
+                            <td>${emp.id ? '✅ Yes (ID: ' + emp.id + ')' : '❌ No (will auto-create)'}</td>
+                            <td>
+                                <button onclick="selectEmployeeForPayroll(${emp.userId})" class="btn" style="background: #22c55e; color: white; border: none; padding: 4px 12px; border-radius: 3px; cursor: pointer;">
+                                    Select for Payroll
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            })
+            .catch(err => {
+                console.error('Error loading employees list:', err);
+                const tbody = document.querySelector('#employeesListTable tbody');
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 20px; color: red;">Error loading employees</td></tr>';
+            });
+    }
+
+    function selectEmployeeForPayroll(userId) {
+        document.getElementById('employeeId').value = userId;
+        searchEmployee();
+        document.getElementById('payrollForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function loadPayrollHistory() {
+        fetch('/api/hr/payroll')
+            .then(res => res.json())
+            .then(data => {
+                const tbody = document.querySelector('#payrollTable tbody');
+                tbody.innerHTML = '';
+                data.forEach(payroll => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${payroll.id}</td>
+                            <td>${payroll.employeeId}</td>
+                            <td>${payroll.employeeName || 'Unknown'}</td>
+                            <td>LKR ${payroll.amount}</td>
+                            <td>${payroll.date}</td>
+                            <td>${payroll.status}</td>
+                            <td>
+                                <button onclick="updatePayrollStatus(${payroll.id}, '${payroll.status === 'PENDING' ? 'PAID' : 'PENDING'}')" class="btn" style="background: ${payroll.status === 'PENDING' ? '#22c55e' : '#f59e0b'}; color: white; border: none; padding: 4px 8px; border-radius: 3px; cursor: pointer;">
+                                    ${payroll.status === 'PENDING' ? 'Mark Paid' : 'Mark Pending'}
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            })
+            .catch(err => console.error(err));
+    }
+
+    function searchPayrollHistory() {
+        const searchTerm = document.getElementById('searchPayroll').value;
+        if (!searchTerm) {
+            loadPayrollHistory();
+            return;
+        }
+
+        fetch(`/api/hr/payroll/search?employeeId=${searchTerm}`)
+            .then(res => res.json())
+            .then(data => {
+                const tbody = document.querySelector('#payrollTable tbody');
+                tbody.innerHTML = '';
+                data.forEach(payroll => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${payroll.id}</td>
+                            <td>${payroll.employeeId}</td>
+                            <td>${payroll.employeeName || 'Unknown'}</td>
+                            <td>LKR ${payroll.amount}</td>
+                            <td>${payroll.date}</td>
+                            <td>${payroll.status}</td>
+                            <td>
+                                <button onclick="updatePayrollStatus(${payroll.id}, '${payroll.status === 'PENDING' ? 'PAID' : 'PENDING'}')" class="btn" style="background: ${payroll.status === 'PENDING' ? '#22c55e' : '#f59e0b'}; color: white; border: none; padding: 4px 8px; border-radius: 3px; cursor: pointer;">
+                                    ${payroll.status === 'PENDING' ? 'Mark Paid' : 'Mark Pending'}
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            })
+            .catch(err => console.error(err));
+    }
+
+    function updatePayrollStatus(payrollId, newStatus) {
+        fetch(`/api/hr/payroll/${payrollId}`, {
+            method: 'PUT',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ status: newStatus })
+        })
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('payrollMessage').textContent = 'Payroll status updated successfully!';
+                document.getElementById('payrollMessage').className = 'message success';
+                loadPayrollHistory();
+            })
+            .catch(err => {
+                console.error(err);
+                document.getElementById('payrollMessage').textContent = 'Error updating payroll status!';
+                document.getElementById('payrollMessage').className = 'message error';
+            });
+    }
+
+    function cancelForm() {
+        document.querySelectorAll('input, select, textarea').forEach(el => el.value = '');
+        document.querySelectorAll('.message').forEach(el => el.textContent = '');
+        document.getElementById('employeeInfo').style.display = 'none';
+        window.currentEmployeeId = null;
+    }
+
+    function logout() {
+        fetch('/api/auth/logout', { method: 'POST' })
+            .then(() => {
+                localStorage.clear();
+                window.location.href = '/login.html';
+            })
+            .catch(() => {
+                window.location.href = '/login.html';
+            });
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+        loadCustomers();
+    });
+</script>
+</body>
+</html>loseAddArticleModal();
+loadKnowledgeBase();
+}, 1500);
+}, 1000);
+}
+
+function viewArticle(articleId) {

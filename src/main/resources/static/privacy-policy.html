@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privacy Policy - HealthInsure</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    :root {
+      --bg-gradient-1: #020617;
+      --bg-gradient-2: #0f172a;
+      --accent-cyan: #22d3ee;
+      --accent-violet: #a855f7;
+      --accent-pink: #ec4899;
+      --card-bg: rgba(15, 23, 42, 0.85);
+      --border-subtle: rgba(148, 163, 184, 0.35);
+      --text-main: #e5e7eb;
+      --text-muted: #9ca3af;
+      --danger: #f97373;
+      --success: #22c55e;
+      --warning: #f59e0b;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: radial-gradient(circle at top, #0f172a 0, #020617 55%, #000 100%);
+      min-height: 100vh;
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, -system-ui, sans-serif;
+      color: var(--text-main);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* Animated Background */
+    .bg-orbit {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      z-index: -2;
+    }
+
+    .bg-orbit::before, .bg-orbit::after {
+      content: "";
+      position: absolute;
+      width: 480px;
+      height: 480px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 30%, rgba(56, 189, 248, 0.75), transparent 60%);
+      filter: blur(4px);
+      opacity: 0.55;
+      animation: floatOrb 18s ease-in-out infinite;
+    }
+
+    .bg-orbit::after {
+      top: auto; left: auto; right: -120px; bottom: -160px;
+      background: radial-gradient(circle at 70% 70%, rgba(168, 85, 247, 0.85), transparent 60%);
+      animation-delay: -9s;
+    }
+
+    .bg-grid {
+      position: fixed;
+      inset: 0;
+      background-image:
+              linear-gradient(to right, rgba(148, 163, 184, 0.08) 1px, transparent 1px),
+              linear-gradient(to bottom, rgba(148, 163, 184, 0.08) 1px, transparent 1px);
+      background-size: 40px 40px;
+      opacity: 0.7;
+      mask-image: radial-gradient(circle at center, black 0, black 45%, transparent 80%);
+      z-index: -1;
+      animation: gridDrift 36s linear infinite;
+    }
+
+    @keyframes floatOrb {
+      0%, 100% { transform: translate3d(-160px, -120px, 0) scale(1); }
+      25% { transform: translate3d(40px, -200px, 0) scale(1.05); }
+      50% { transform: translate3d(220px, 40px, 0) scale(1.08); }
+      75% { transform: translate3d(-40px, 140px, 0) scale(1.03); }
+    }
+
+    @keyframes gridDrift {
+      0% { transform: translate3d(0, 0, 0) scale(1); }
+      50% { transform: translate3d(-40px, -20px, 0) scale(1.02); }
+      100% { transform: translate3d(0, 0, 0) scale(1); }
+    }
+
+    /* Header */
+    header {
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+      padding: 1.5rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .brand-lockup {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-mark {
+      width: 80px;
+      height: 80px;
+      border-radius: 16px;
+      background: radial-gradient(circle at 30% 20%, #e5faff 0, #22d3ee 40%, #0ea5e9 75%, #0f172a 100%);
+      box-shadow:
+              0 0 0 1px rgba(148, 163, 184, 0.3),
+              0 18px 40px rgba(15, 23, 42, 0.9),
+              0 0 30px rgba(34, 211, 238, 0.4);
+      position: relative;
+      overflow: hidden;
+      display: grid;
+      place-items: center;
+      animation: logoFloat 3s ease-in-out infinite, logoGlow 2s ease-in-out infinite;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .brand-mark:hover {
+      transform: scale(1.05) rotate(5deg);
+      box-shadow:
+              0 0 0 1px rgba(148, 163, 184, 0.5),
+              0 25px 50px rgba(15, 23, 42, 1),
+              0 0 50px rgba(34, 211, 238, 0.6);
+    }
+
+    .brand-mark::before {
+      content: "";
+      position: absolute;
+      inset: -2px;
+      border-radius: 18px;
+      background: linear-gradient(45deg, rgba(34, 211, 238, 0.8), rgba(168, 85, 247, 0.8), rgba(34, 211, 238, 0.8));
+      background-size: 200% 200%;
+      opacity: 0;
+      z-index: -1;
+      animation: logoShimmer 3s ease-in-out infinite;
+    }
+
+    .brand-mark img {
+      width: 72px;
+      height: 72px;
+      object-fit: contain;
+      border-radius: 12px;
+      background: #0f172a;
+      box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.35);
+      animation: logoImagePulse 2.5s ease-in-out infinite;
+      transition: transform 0.3s ease;
+    }
+
+    .brand-mark:hover img {
+      transform: scale(1.08);
+    }
+
+    @keyframes logoFloat {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-8px); }
+    }
+
+    @keyframes logoGlow {
+      0%, 100% {
+        box-shadow:
+                0 0 0 1px rgba(148, 163, 184, 0.3),
+                0 18px 40px rgba(15, 23, 42, 0.9),
+                0 0 30px rgba(34, 211, 238, 0.4);
+      }
+      50% {
+        box-shadow:
+                0 0 0 1px rgba(148, 163, 184, 0.4),
+                0 20px 45px rgba(15, 23, 42, 1),
+                0 0 40px rgba(34, 211, 238, 0.6);
+      }
+    }
+
+    @keyframes logoShimmer {
+      0% { background-position: 0% 50%; opacity: 0; }
+      50% { opacity: 0.3; }
+      100% { background-position: 200% 50%; opacity: 0; }
+    }
+
+    @keyframes logoImagePulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.02); opacity: 0.95; }
+    }
+
+    .brand-text-main {
+      font-size: 1.8rem;
+      font-weight: 600;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: #e5e7eb;
+    }
+
+    .brand-text-sub {
+      margin-top: 3px;
+      font-size: 0.78rem;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    /* Main Container */
+    .main-glass {
+      background:
+              radial-gradient(circle at 0 0, rgba(148, 163, 184, 0.18), transparent 55%),
+              linear-gradient(135deg, rgba(15, 23, 42, 0.92), rgba(15, 23, 42, 0.86));
+      box-shadow:
+              0 25px 60px rgba(15, 23, 42, 0.95),
+              0 0 0 1px rgba(148, 163, 184, 0.4);
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      border-radius: 22px;
+      max-width: 1280px;
+      margin: 32px auto;
+      padding: 2.5rem 2.1rem 2rem;
+      position: relative;
+      z-index: 2;
+      animation: cardEnter 1.2s cubic-bezier(.68,-0.55,.27,1.55) both;
+    }
+
+    @keyframes cardEnter {
+      0% { opacity: 0; transform: translateY(60px) scale(0.97); }
+      60% { opacity: 1; transform: translateY(-8px) scale(1.015); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* Policy Content */
+    .policy-content {
+      background:
+              radial-gradient(circle at 0 0, rgba(148, 163, 184, 0.18), transparent 55%),
+              linear-gradient(135deg, rgba(15, 23, 42, 0.92), rgba(15, 23, 42, 0.86));
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      border-radius: 18px;
+      padding: 2.5rem 2.1rem 2rem;
+      box-shadow: 0 25px 60px rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+
+    .policy-content h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 2rem;
+      text-align: center;
+      background: linear-gradient(120deg, #e5e7eb, #e0f2fe, #c4b5fd);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .policy-content h2 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin: 2rem 0 1rem 0;
+      color: var(--accent-cyan);
+    }
+
+    .policy-content h3 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin: 1.5rem 0 0.75rem 0;
+      color: var(--text-main);
+    }
+
+    .policy-content p {
+      margin-bottom: 1rem;
+      color: var(--text-main);
+      line-height: 1.7;
+    }
+
+    .policy-content ul, .policy-content ol {
+      margin: 1rem 0 1rem 2rem;
+      color: var(--text-main);
+    }
+
+    .policy-content li {
+      margin-bottom: 0.5rem;
+    }
+
+    .policy-content strong {
+      color: var(--accent-cyan);
+      font-weight: 600;
+    }
+
+    /* Effective Date Box */
+    .effective-date {
+      background: linear-gradient(135deg, rgba(34, 211, 238, 0.2), rgba(168, 85, 247, 0.1));
+      border: 1px solid rgba(34, 211, 238, 0.3);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin: 2rem 0;
+      text-align: center;
+    }
+
+    .effective-date h3 {
+      margin: 0 0 0.5rem 0;
+      color: var(--accent-cyan);
+    }
+
+    .effective-date p {
+      margin: 0;
+      color: var(--text-muted);
+    }
+
+    /* Contact Info Box */
+    .contact-info {
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(16, 185, 129, 0.05));
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin: 2rem 0;
+    }
+
+    .contact-info h3 {
+      margin: 0 0 1rem 0;
+      color: #22c55e;
+    }
+
+    .contact-info p {
+      margin: 0.5rem 0;
+    }
+
+    .contact-info a {
+      color: var(--accent-cyan);
+      text-decoration: none;
+    }
+
+    .contact-info a:hover {
+      text-decoration: underline;
+    }
+
+    /* Footer */
+    footer {
+      padding: 10px 18px 16px;
+      font-size: 0.8rem;
+      color: #6b7280;
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      background: rgba(15, 23, 42, 0.8);
+      backdrop-filter: blur(10px);
+      border-top: 1px solid rgba(148, 163, 184, 0.1);
+    }
+
+    footer a {
+      color: #9ca3af;
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    footer a:hover {
+      color: var(--accent-cyan);
+      text-decoration: underline;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .main-glass {
+        margin: 16px;
+        padding: 1.5rem 1rem;
+      }
+
+      .policy-content {
+        padding: 1.5rem 1rem;
+      }
+
+      .policy-content h1 {
+        font-size: 2rem;
+      }
+
+      header {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+      }
+
+      .brand-lockup {
+        justify-content: center;
+      }
+
+      .brand-mark {
+        width: 60px;
+        height: 60px;
+      }
+
+      .brand-mark img {
+        width: 54px;
+        height: 54px;
+      }
+
+      .brand-text-main {
+        font-size: 1.4rem;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="bg-orbit"></div>
+<div class="bg-grid"></div>
+
+<header>
+  <div class="container mx-auto flex items-center justify-between px-4" style="max-width: 1400px; margin: 0 auto;">
+    <div class="brand-lockup">
+      <div class="brand-mark">
+        <img src="Lanka.jpeg" alt="HealthInsure Logo">
+      </div>
+      <div>
+        <div class="brand-text-main">Privacy Policy</div>
+        <div class="brand-text-sub">Your Privacy Matters</div>
+      </div>
+    </div>
+    <div style="display: flex; align-items: center; gap: 1rem;">
+      <a href="/login.html" style="color: var(--accent-cyan); text-decoration: none; font-weight: 600;">
+        <i class="fas fa-sign-in-alt"></i> Login
+      </a>
+      <a href="/contact.html" class="btn" style="background: linear-gradient(135deg, #22d3ee, #a855f7); color: #0b1120; padding: 10px 20px; border-radius: 999px; text-decoration: none;">
+        <i class="fas fa-phone"></i> Contact Us
+      </a>
+    </div>
+  </div>
+</header>
+
+<div class="main-glass">
+  <div class="policy-content">
+    <h1>Privacy Policy</h1>
+
+    <div class="effective-date">
+      <h3>Effective Date: January 1, 2025</h3>
+      <p>This Privacy Policy describes how HealthInsure collects, uses, and protects your personal information.</p>
+    </div>
+
+    <h2>1. Information We Collect</h2>
+
+    <h3>Personal Information</h3>
+    <p>We collect personal information that you provide to us directly, including but not limited to:</p>
+    <ul>
+      <li><strong>Identity Data:</strong> Name, date of birth, national identification numbers</li>
+      <li><strong>Contact Data:</strong> Email address, phone number, postal address</li>
+      <li><strong>Financial Data:</strong> Bank account details, payment card information</li>
+      <li><strong>Medical Data:</strong> Health information, medical history, treatment records</li>
+      <li><strong>Policy Data:</strong> Insurance policy details, coverage information, claims history</li>
+    </ul>
+
+    <h3>Automatically Collected Information</h3>
+    <p>When you use our services, we automatically collect:</p>
+    <ul>
+      <li>Device information and IP address</li>
+      <li>Browser type and operating system</li>
+      <li>Usage data and interaction patterns</li>
+      <li>Cookies and similar tracking technologies</li>
+    </ul>
+
+    <h2>2. How We Use Your Information</h2>
+    <p>We use your personal information for the following purposes:</p>
+    <ul>
+      <li><strong>Policy Administration:</strong> To underwrite, issue, and manage your insurance policies</li>
+      <li><strong>Claims Processing:</strong> To evaluate and process insurance claims</li>
+      <li><strong>Customer Service:</strong> To provide support and respond to inquiries</li>
+      <li><strong>Marketing:</strong> To send promotional communications (with your consent)</li>
+      <li><strong>Legal Compliance:</strong> To meet regulatory and legal requirements</li>
+      <li><strong>Fraud Prevention:</strong> To detect and prevent fraudulent activities</li>
+    </ul>
+
+    <h2>3. Legal Basis for Processing</h2>
+    <p>We process your personal information based on:</p>
+    <ul>
+      <li><strong>Contract:</strong> To fulfill our obligations under insurance policies</li>
+      <li><strong>Legal Obligation:</strong> To comply with insurance and financial regulations</li>
+      <li><strong>Legitimate Interest:</strong> To improve our services and prevent fraud</li>
+      <li><strong>Consent:</strong> For marketing communications and optional services</li>
+    </ul>
+
+    <h2>4. Data Sharing and Disclosure</h2>
+    <p>We may share your information with:</p>
+    <ul>
+      <li><strong>Insurance Partners:</strong> Reinsurers and underwriting partners</li>
+      <li><strong>Service Providers:</strong> IT vendors, payment processors, and administrative services</li>
+      <li><strong>Healthcare Providers:</strong> Hospitals and medical professionals for claims processing</li>
+      <li><strong>Regulatory Authorities:</strong> Government agencies as required by law</li>
+      <li><strong>Legal Entities:</strong> Courts, law enforcement, and legal advisors when necessary</li>
+    </ul>
+
+    <h2>5. Data Security</h2>
+    <p>We implement appropriate technical and organizational measures to protect your personal information:</p>
+    <ul>
+      <li>Encryption of data in transit and at rest</li>
+      <li>Access controls and authentication mechanisms</li>
+      <li>Regular security assessments and audits</li>
+      <li>Staff training on data protection</li>
+      <li>Incident response procedures</li>
+    </ul>
+
+    <h2>6. Data Retention</h2>
+    <p>We retain your personal information for as long as necessary to:</p>
+    <ul>
+      <li>Administer your insurance policies</li>
+      <li>Process claims and provide customer service</li>
+      <li>Comply with legal and regulatory requirements</li>
+      <li>Defend against legal claims</li>
+    </ul>
+    <p>After the retention period, we securely delete or anonymize your data.</p>
+
+    <h2>7. Your Rights</h2>
+    <p>Under applicable data protection laws, you have the right to:</p>
+    <ul>
+      <li><strong>Access:</strong> Request a copy of your personal information</li>
+      <li><strong>Rectification:</strong> Correct inaccurate or incomplete data</li>
+      <li><strong>Erasure:</strong> Request deletion of your personal information</li>
+      <li><strong>Restriction:</strong> Limit the processing of your data</li>
+      <li><strong>Portability:</strong> Transfer your data to another provider</li>
+      <li><strong>Objection:</strong> Object to certain processing activities</li>
+      <li><strong>Withdraw Consent:</strong> Revoke consent at any time</li>
+    </ul>
+
+    <h2>8. International Data Transfers</h2>
+    <p>Your personal information may be transferred to and processed in countries outside Sri Lanka. When we do so, we ensure appropriate safeguards are in place to protect your information in accordance with applicable data protection laws.</p>
+
+    <h2>9. Cookies and Tracking Technologies</h2>
+    <p>We use cookies and similar technologies to:</p>
+    <ul>
+      <li>Maintain session information and user preferences</li>
+      <li>Analyze website usage and improve our services</li>
+      <li>Provide personalized content and advertising</li>
+    </ul>
+    <p>You can manage cookie preferences through your browser settings.</p>
+
+    <h2>10. Children's Privacy</h2>
+    <p>Our services are not directed to children under 13 years of age. We do not knowingly collect personal information from children. If you believe we have collected information from a child, please contact us immediately.</p>
+
+    <h2>11. Changes to This Policy</h2>
+    <p>We may update this Privacy Policy from time to time. We will notify you of any material changes through appropriate channels. The effective date will be updated accordingly.</p>
+
+    <h2>12. Contact Us</h2>
+    <div class="contact-info">
+      <h3>Data Protection Officer</h3>
+      <p><strong>HealthInsure (Pvt) Ltd</strong></p>
+      <p>123 Insurance Tower, Colombo 01, Sri Lanka</p>
+      <p><i class="fas fa-envelope"></i> <a href="mailto:dpo@healthinsure.lk">dpo@healthinsure.lk</a></p>
+      <p><i class="fas fa-phone"></i> <a href="tel:+94112345678">+94 11 234 5678</a></p>
+    </div>
+
+    <h2>13. Complaints</h2>
+    <p>If you have concerns about our data processing practices, you may file a complaint with:</p>
+    <ul>
+      <li>Our Data Protection Officer at the contact information above</li>
+      <li>The relevant data protection authority in your jurisdiction</li>
+    </ul>
+
+    <h2>14. Legal Disclaimers</h2>
+    <p>This Privacy Policy is provided in accordance with:</p>
+    <ul>
+      <li>Sri Lanka Personal Data Protection Act</li>
+      <li>EU General Data Protection Regulation (GDPR) where applicable</li>
+      <li>Other applicable data protection laws and regulations</li>
+    </ul>
+
+    <p style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid rgba(148, 163, 184, 0.2); color: var(--text-muted); text-align: center;">
+      <strong>Last Updated:</strong> January 1, 2025 | <strong>Version:</strong> 1.0
+    </p>
+  </div>
+</div>
+
+<footer>
+  <span>&copy; 2025 HealthInsure</span>
+  <a href="/contact.html">Contact Support</a>
+  <a href="/privacy-policy.html">Privacy Policy</a>
+</footer>
+
+<script>
+  // Add smooth scrolling for anchor links
+  document.addEventListener('DOMContentLoaded', function() {
+    const links = document.querySelectorAll('a[href^="#"]');
+    links.forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      });
+    });
+
+    // Add highlight effect to sections when clicked
+    const sections = document.querySelectorAll('.policy-content h2');
+    sections.forEach(section => {
+      section.addEventListener('click', function() {
+        this.style.background = 'linear-gradient(135deg, rgba(34, 211, 238, 0.2), rgba(168, 85, 247, 0.1))';
+        this.style.padding = '1rem';
+        this.style.borderRadius = '8px';
+        this.style.transition = 'all 0.3s ease';
+
+        setTimeout(() => {
+          this.style.background = 'none';
+          this.style.padding = '0';
+        }, 2000);
+      });
+    });
+  });
+</script>
+</body>
+</html>
