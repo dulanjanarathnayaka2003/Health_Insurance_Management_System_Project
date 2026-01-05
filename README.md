@@ -1,5 +1,6 @@
 # Lanka Health Insurance - HealthInsureOnline
-<img width="1917" height="936" alt="image" src="https://github.com/user-attachments/assets/32a232bb-8d1f-4071-ba0a-03076381474c" />
+<img width="1916" height="926" alt="image" src="https://github.com/user-attachments/assets/347c8139-0abc-4779-abc5-117b6ba2eafd" />
+
 
 
 
