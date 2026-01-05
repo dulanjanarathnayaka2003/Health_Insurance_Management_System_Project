@@ -1,6 +1,10 @@
 package com.sliit.healthins.controller;
 
+import com.sliit.healthins.dto.PasswordResetConfirmDTO;
+import com.sliit.healthins.dto.PasswordResetRequestDTO;
+import com.sliit.healthins.service.PasswordResetService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -17,6 +21,12 @@ public class AuthController {
     @Autowired
     private AuthenticationManager authenticationManager;
 
+    private final PasswordResetService passwordResetService;
+
+    public AuthController(PasswordResetService passwordResetService) {
+        this.passwordResetService = passwordResetService;
+    }
+
     @PostMapping("/login")
     public String login(@RequestParam String username, @RequestParam String password, HttpServletRequest request) {
         try {
@@ -24,10 +34,9 @@ public class AuthController {
                 new UsernamePasswordAuthenticationToken(username, password)
             );
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            
-            // Store authentication in session
+
             request.getSession().setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
-            
+
             return "Login successful";
         } catch (Exception e) {
             return "Invalid username or password";
@@ -40,5 +49,19 @@ public class AuthController {
         SecurityContextHolder.clearContext();
         return "Logged out successfully";
     }
-}
 
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> requestPasswordReset(@RequestBody PasswordResetRequestDTO dto) {
+        passwordResetService.createResetToken(dto);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody PasswordResetConfirmDTO dto) {
+        boolean success = passwordResetService.resetPassword(dto);
+        if (!success) {
+            return ResponseEntity.badRequest().body("Invalid or expired token");
+        }
+        return ResponseEntity.ok().build();
+    }
+}

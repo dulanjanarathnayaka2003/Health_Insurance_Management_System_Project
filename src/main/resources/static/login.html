@@ -848,7 +848,7 @@
           <div class="field">
             <div class="field-label-row">
               <label for="password">Password</label>
-              <a href="#" tabindex="-1">Forgot?</a>
+              <a href="#" id="forgotLink">Forgot?</a>
             </div>
             <div class="input-wrap">
               <div class="input-icon-left">
@@ -930,6 +930,22 @@
   const passwordError = document.getElementById('password-error');
   const formError = document.getElementById('form-error');
   const loginButton = document.getElementById('loginButton');
+  const forgotLink = document.getElementById('forgotLink');
+
+  forgotLink.addEventListener('click', function (e) {
+    e.preventDefault();
+    const email = prompt('Enter the email associated with your account:');
+    if (!email) return;
+    fetch('/api/auth/forgot-password', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({email})
+    }).then(() => {
+      alert('If that email exists in our system, a reset link has been sent.');
+    }).catch(() => {
+      alert('Unable to process request right now. Try again later.');
+    });
+  });
 
   loginForm.addEventListener('submit', function(event) {
     event.preventDefault();
