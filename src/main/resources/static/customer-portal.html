@@ -1572,9 +1572,72 @@
 
         if (tabId === 'my-profile') refreshProfile();
         if (tabId === 'manage-policies') loadAvailablePolicies();
-        if (tabId === 'submit-claim') loadClaimHistory();
+        if (tabId === 'submit-claim') {
+            loadClaimHistory();
+            loadPoliciesForClaim();
+        }
         if (tabId === 'payment-status') refreshPayments();
         if (tabId === 'inquiry-history') refreshInquiries();
+    }
+
+    function loadPoliciesForClaim() {
+        fetch(`/api/customer/policies`)
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error(`Failed to load policies: ${res.status} ${res.statusText}`);
+                }
+                return res.json();
+            })
+            .then(policies => {
+                const policySelect = document.getElementById('policySelect');
+                if (!policySelect) return;
+                
+                policySelect.innerHTML = '<option value="">Select a Policy</option>';
+                const submitBtn = document.querySelector('#claimForm .submit-btn');
+                const policySelectMsg = document.getElementById('policySelectMsg');
+                
+                // Filter only ACTIVE policies for claim submission
+                const activePolicies = policies.filter(p => p.status && p.status.toUpperCase() === 'ACTIVE');
+                
+                if (activePolicies.length === 0) {
+                    policySelect.disabled = true;
+                    if (submitBtn) submitBtn.disabled = true;
+                    if (policySelectMsg) policySelectMsg.textContent = 'No active policies available. Please check your dashboard or purchase a policy.';
+                } else {
+                    policySelect.disabled = false;
+                    if (submitBtn) submitBtn.disabled = false;
+                    if (policySelectMsg) policySelectMsg.textContent = '';
+                    
+                    activePolicies.forEach(p => {
+                        if (p.id && p.policyNumber) {
+                            const displayText = `${p.policyNumber} - ${p.coverage || p.coverageType || 'Health Insurance'}`;
+                            const premium = p.premiumAmount || 0;
+                            const coverageType = (p.coverage || p.coverageType || '').toUpperCase();
+                            const isPremium = coverageType.includes('PREMIUM');
+                            policySelect.innerHTML += `<option value="${p.id}" data-premium="${premium}" data-type="${isPremium ? 'PREMIUM' : 'STANDARD'}">${displayText}</option>`;
+                        }
+                    });
+                    
+                    // Double check if we actually added any options
+                    if (policySelect.options.length === 1) {
+                        policySelect.disabled = true;
+                        if (submitBtn) submitBtn.disabled = true;
+                        if (policySelectMsg) policySelectMsg.textContent = 'No active policies available. Please check your dashboard or purchase a policy.';
+                    }
+                }
+            })
+            .catch(err => {
+                console.error('Error loading policies for claim:', err);
+                const policySelect = document.getElementById('policySelect');
+                const submitBtn = document.querySelector('#claimForm .submit-btn');
+                const policySelectMsg = document.getElementById('policySelectMsg');
+                if (policySelect) {
+                    policySelect.disabled = true;
+                    policySelect.innerHTML = '<option value="">Select a Policy</option>';
+                }
+                if (submitBtn) submitBtn.disabled = true;
+                if (policySelectMsg) policySelectMsg.textContent = 'Error loading your policies. Please refresh or contact support.';
+            });
     }
 
     function refreshProfile() {
@@ -2167,69 +2230,126 @@
     }
 
     function loadAvailablePolicies() {
+        loadMyPurchasedPolicies();
+        
         const container = document.getElementById('availablePoliciesContainer');
-        container.innerHTML = `
-            <div class="policy-card">
-                <h4><i class="fas fa-shield-alt"></i> Standard Health Plan</h4>
-                <p>Comprehensive health coverage for individuals and families</p>
-                <div style="margin: 15px 0;">
-                    <strong>LKR 5,000 / month</strong><br>
-                    <small>Coverage: Hospitalization, Outpatient, Emergency</small>
-                </div>
-                <button onclick="showPurchaseModal('STANDARD', 5000)" class="buy-btn">
-                    <i class="fas fa-cart-plus"></i> Buy Now
-                </button>
-            </div>
-            <div class="policy-card">
-                <h4><i class="fas fa-crown"></i> Premium Health Plan</h4>
-                <p>Advanced coverage with additional benefits and services</p>
-                <div style="margin: 15px 0;">
-                    <strong>LKR 12,000 / month</strong><br>
-                    <small>Coverage: All Standard + Dental, Vision, Wellness</small>
-                </div>
-                <button onclick="showPurchaseModal('PREMIUM', 12000)" class="buy-btn">
-                    <i class="fas fa-cart-plus"></i> Buy Now
-                </button>
-            </div>
-            <div class="policy-card">
-                <h4><i class="fas fa-star"></i> Family Plus Plan</h4>
-                <p>Complete family protection with maternity benefits</p>
-                <div style="margin: 15px 0;">
-                    <strong>LKR 18,000 / month</strong><br>
-                    <small>Coverage: Whole family, Maternity, Pediatric care</small>
-                </div>
-                <button onclick="showPurchaseModal('FAMILY', 18000)" class="buy-btn">
-                    <i class="fas fa-cart-plus"></i> Buy Now
-                </button>
-            </div>
-        `;
+        if (!container) return;
+        
+        container.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--text-muted);"><i class="fas fa-spinner fa-spin"></i> Loading available policies...</div>';
+        
+        fetch('/api/customer/available-policies')
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error(`Failed to load available policies: ${res.status} ${res.statusText}`);
+                }
+                return res.json();
+            })
+            .then(policies => {
+                container.innerHTML = '';
+                if (!policies || policies.length === 0) {
+                    container.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--text-muted);"><i class="fas fa-info-circle"></i> No policies available at this time.</div>';
+                } else {
+                    policies.forEach(policy => {
+                        const card = document.createElement('div');
+                        card.className = 'policy-card';
+                        const coverageType = policy.coverageType || policy.coverage || 'Health Insurance';
+                        const description = policy.description || 'Comprehensive health coverage';
+                        const benefits = policy.benefits || 'Standard coverage benefits';
+                        const price = policy.price || policy.premiumAmount || 0;
+                        const coverageLimit = policy.coverageLimit || 'As per policy terms';
+                        
+                        card.innerHTML = `
+                            <h4><i class="fas fa-shield-alt"></i> ${coverageType}</h4>
+                            <p>${description}</p>
+                            <div style="margin: 15px 0;">
+                                <strong>LKR ${price.toLocaleString()} / month</strong><br>
+                                <small>Coverage Limit: ${coverageLimit}</small>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.1); padding: 10px; border-radius: 5px; margin: 15px 0; font-size: 0.9em;">
+                                <strong>Benefits:</strong><br>${benefits}
+                            </div>
+                            <button onclick="openPurchaseModal(${policy.id}, '${coverageType}', ${price})" class="buy-btn">
+                                <i class="fas fa-cart-plus"></i> Buy Now
+                            </button>
+                        `;
+                        container.appendChild(card);
+                    });
+                }
+            })
+            .catch(err => {
+                console.error('Error loading available policies:', err);
+                container.innerHTML = `
+                    <div class="policy-card">
+                        <h4><i class="fas fa-shield-alt"></i> Standard Health Plan</h4>
+                        <p>Comprehensive health coverage for individuals and families</p>
+                        <div style="margin: 15px 0;">
+                            <strong>LKR 5,000 / month</strong><br>
+                            <small>Coverage: Hospitalization, Outpatient, Emergency</small>
+                        </div>
+                        <button onclick="openPurchaseModal(1, 'STANDARD', 5000)" class="buy-btn">
+                            <i class="fas fa-cart-plus"></i> Buy Now
+                        </button>
+                    </div>
+                    <div class="policy-card">
+                        <h4><i class="fas fa-crown"></i> Premium Health Plan</h4>
+                        <p>Advanced coverage with additional benefits and services</p>
+                        <div style="margin: 15px 0;">
+                            <strong>LKR 12,000 / month</strong><br>
+                            <small>Coverage: All Standard + Dental, Vision, Wellness</small>
+                        </div>
+                        <button onclick="openPurchaseModal(2, 'PREMIUM', 12000)" class="buy-btn">
+                            <i class="fas fa-cart-plus"></i> Buy Now
+                        </button>
+                    </div>
+                `;
+            });
+    }
 
-        fetch('/api/customer/purchased-policies')
-            .then(res => res.json())
+    function loadMyPurchasedPolicies() {
+        fetch('/api/customer/policies')
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error(`Failed to load policies: ${res.status} ${res.statusText}`);
+                }
+                return res.json();
+            })
             .then(policies => {
                 const tbody = document.querySelector('#myPurchasedPoliciesTable tbody');
+                if (!tbody) return;
+                
                 tbody.innerHTML = '';
-                if (policies.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-muted); font-style: italic;"><i class="fas fa-inbox"></i> No purchased policies yet</td></tr>';
+                if (!policies || policies.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-muted); font-style: italic;"><i class="fas fa-inbox"></i> No purchased policies yet. Purchase your first policy below!</td></tr>';
                 } else {
                     policies.forEach(p => {
+                        const coverageType = p.coverageType || p.coverage || 'Health Insurance';
+                        const coverageDisplay = p.coverageType || (p.coverage && p.coverage.includes('PREMIUM') ? 'Premium Health' : p.coverage && p.coverage.includes('STANDARD') ? 'Standard Health' : p.coverage) || 'Health Insurance';
+                        const coverageDetails = p.description || p.coverage || p.coverageType || 'N/A';
+                        const premiumAmount = p.premiumAmount || 0;
+                        const startDate = p.startDate ? new Date(p.startDate).toLocaleDateString() : 'N/A';
+                        const endDate = p.endDate ? new Date(p.endDate).toLocaleDateString() : 'N/A';
+                        const status = p.status || 'UNKNOWN';
+                        
                         tbody.innerHTML += `
                             <tr>
-                                <td>${p.policyNumber}</td>
-                                <td>${p.coverageType}</td>
-                                <td>LKR ${p.premiumAmount}</td>
-                                <td>${new Date(p.startDate).toLocaleDateString()}</td>
-                                <td>${new Date(p.endDate).toLocaleDateString()}</td>
-                                <td><span class="status-badge ${p.status.toLowerCase()}">${p.status}</span></td>
-                                <td>${p.coverageDetails}</td>
+                                <td>${p.policyNumber || 'N/A'}</td>
+                                <td>${coverageDisplay}</td>
+                                <td>LKR ${premiumAmount.toLocaleString()}</td>
+                                <td>${startDate}</td>
+                                <td>${endDate}</td>
+                                <td><span class="status-badge ${status.toLowerCase()}">${status}</span></td>
+                                <td>${coverageDetails}</td>
                             </tr>
                         `;
                     });
                 }
             })
             .catch(err => {
+                console.error('Error loading purchased policies:', err);
                 const tbody = document.querySelector('#myPurchasedPoliciesTable tbody');
-                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--danger);"><i class="fas fa-exclamation-triangle"></i> Error loading purchased policies</td></tr>';
+                if (tbody) {
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--danger);"><i class="fas fa-exclamation-triangle"></i> Error loading purchased policies. Please refresh or contact support.</td></tr>';
+                }
             });
     }
 
